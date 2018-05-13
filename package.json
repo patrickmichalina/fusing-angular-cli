@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "chalk": "2.4.1",
+    "favicons": "5.1.1",
     "fuse-box": "3.2.2",
     "inquirer": "5.2.0",
     "rxjs": "6.1.0",
