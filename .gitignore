@@ -80,3 +80,4 @@ src/config.json
 .serverless
 .dist/
 .build/
+fusing-angular-demo-app/

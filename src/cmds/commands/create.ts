@@ -1,5 +1,12 @@
 import { prompt } from 'inquirer'
 import { logError } from '../../utils/log'
+import createFolder from '../../utils/create-folder'
+// import { lstatSync } from 'fs'
+
+interface newAppConfigRespinse {
+  readonly fullname: string
+  readonly shortname: string
+}
 
 export default function () {
   console.log('Create a new Angular application\n')
@@ -147,9 +154,22 @@ export default function () {
       ]
     }
   ])
-    .then(res => {
-
+    .then((res: newAppConfigRespinse) => {
       // console.log(res) // TODO
+      createFolder(res.fullname)
+      // lstat(res.fullname)
+      //   .then(stats => {
+      //     logError(`\nDirectory ${res.fullname} alreay exists\n`)
+      //   })
+      //   .catch(err => {
+      //     mkdir(res.fullname)
+      //       .then(() => {
+      //         log('success!')
+      //       })
+      //       .catch(err => {
+      //         log(err)
+      //       })
+      //   })
     })
     .catch(err => {
       logError(err)
