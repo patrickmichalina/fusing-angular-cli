@@ -1,6 +1,6 @@
 {
   "name": "fusing-angular-cli",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "An Angular application generator and runner",
   "main": ".build/index.js",
   "ts:main": "index.ts",
@@ -35,12 +35,12 @@
     "@types/inquirer": "0.0.41",
     "@types/table": "4.0.5",
     "@types/yargs": "11.0.0",
-    "ajv": "6.5.0",
     "tslint": "5.10.0",
     "tslint-immutable": "4.5.4",
     "uglify-js": "3.3.24"
   },
   "dependencies": {
+    "ajv": "6.5.0",
     "chalk": "2.4.1",
     "favicons": "5.1.1",
     "fuse-box": "3.2.2",
