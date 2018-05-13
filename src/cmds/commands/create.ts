@@ -128,7 +128,24 @@ export default function () {
           disabled: 'unavailable, in development'
         }
       ]
-    }
+    },
+    {
+      type: 'checkbox',
+      name: 'ide',
+      message: 'IDE Configurations',
+      choices: [
+        {
+          name: 'Visual Studio Code',
+          value: 'vscode',
+          checked: true
+        },
+        {
+          name: 'Webstorm',
+          value: 'webstorm',
+          disabled: 'unavailable, in development'
+        }
+      ]
+    },
   ])
     .then(res => {
 
