@@ -1,0 +1,53 @@
+{
+  "name": "fusing-angular-cli",
+  "version": "0.0.11",
+  "description": "An Angular application generator and runner",
+  "main": ".build/index.js",
+  "ts:main": "index.ts",
+  "typings": "index.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fusing-angular/fusing-angular"
+  },
+  "author": {
+    "name": "Patrick Michalina",
+    "email": "patrickmichalina@mac.com",
+    "url": "https://github.com/fusing-angular/cli"
+  },
+  "bin": {
+    "fng": ".build/fng"
+  },
+  "files": [
+    ".build"
+  ],
+  "engines": {
+    "node": ">= 10.0.0"
+  },
+  "scripts": {
+    "start": "ts-node fuse",
+    "build": "ts-node fuse --build",
+    "lint": "tslint --project tsconfig.json",
+    "prepublish": "tslint --project tsconfig.json && ts-node fuse --build"
+  },
+  "devDependencies": {
+    "@types/chalk": "2.2.0",
+    "@types/inquirer": "0.0.41",
+    "@types/table": "4.0.5",
+    "@types/yargs": "11.0.0",
+    "ajv": "6.5.0",
+    "tslint": "5.10.0",
+    "tslint-immutable": "4.5.4",
+    "uglify-js": "3.3.24"
+  },
+  "dependencies": {
+    "chalk": "2.4.1",
+    "fuse-box": "3.2.2",
+    "inquirer": "5.2.0",
+    "rxjs": "6.1.0",
+    "table": "4.0.3",
+    "ts-node": "6.0.3",
+    "typescript": "2.8.3",
+    "yargs": "11.0.0"
+  }
+}
