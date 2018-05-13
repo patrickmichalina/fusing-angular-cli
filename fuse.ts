@@ -1,21 +1,14 @@
-import { FuseBox, QuantumPlugin, Bundle, JSONPlugin, RawPlugin } from 'fuse-box'
-import { writeFileSync, chmodSync } from 'fs'
+import { FuseBox, QuantumPlugin, JSONPlugin, RawPlugin } from 'fuse-box'
 import { resolve } from 'path'
 import { argv } from 'yargs'
+import shabang from './tools/scripts/fuse-shebang'
 
 const appName = 'fng'
 const outputDir = '.build'
 const homeDir = './'
 const outputPath = `${outputDir}/${appName}`
+const absOutputPath = resolve(outputPath)
 const isProdBuild = argv.build
-
-const shabang = (bundle: Bundle) => {
-  const sheBang = '#!/usr/bin/env node'
-  const final = `${sheBang}\n${bundle.generatedCode.toString()}`
-  const path = resolve(outputPath)
-  writeFileSync(path, final)
-  chmodSync(path, '755')
-}
 
 const fuse = FuseBox.init({
   cache: !isProdBuild,
@@ -41,10 +34,10 @@ const fuse = FuseBox.init({
 })
 
 const bundle = fuse.bundle(appName)
-!isProdBuild && bundle.watch(`src/**`).completed(fp => shabang(fp.bundle))
+!isProdBuild && bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))
 bundle.instructions('> [src/index.ts]')
 
 fuse.run().then(bp => {
   const bundle = bp.bundles.get(appName)
-  bundle && shabang(bundle)
+  bundle && shabang(bundle, absOutputPath)
 })
