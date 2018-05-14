@@ -155,21 +155,7 @@ export default function () {
     }
   ])
     .then((res: newAppConfigRespinse) => {
-      // console.log(res) // TODO
-      createFolder(res.fullname)
-      // lstat(res.fullname)
-      //   .then(stats => {
-      //     logError(`\nDirectory ${res.fullname} alreay exists\n`)
-      //   })
-      //   .catch(err => {
-      //     mkdir(res.fullname)
-      //       .then(() => {
-      //         log('success!')
-      //       })
-      //       .catch(err => {
-      //         log(err)
-      //       })
-      //   })
+      createFolder(res.fullname).subscribe()
     })
     .catch(err => {
       logError(err)
