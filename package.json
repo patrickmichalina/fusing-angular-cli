@@ -1,6 +1,6 @@
 {
   "name": "fusing-angular-cli",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "An Angular application generator and runner",
   "main": ".build/index.js",
   "ts:main": "index.ts",
@@ -28,7 +28,8 @@
     "start": "ts-node fuse",
     "build": "ts-node fuse --build",
     "lint": "tslint --project tsconfig.json",
-    "prepublish": "tslint --project tsconfig.json && ts-node fuse --build"
+    "prepare": "tslint --project tsconfig.json",
+    "prepublishOnly": "ts-node fuse --build"
   },
   "devDependencies": {
     "@types/chalk": "2.2.0",
@@ -37,7 +38,7 @@
     "@types/yargs": "11.0.0",
     "tslint": "5.10.0",
     "tslint-immutable": "4.5.4",
-    "uglify-js": "3.3.24"
+    "uglify-js": "3.3.25"
   },
   "dependencies": {
     "ajv": "6.5.0",
