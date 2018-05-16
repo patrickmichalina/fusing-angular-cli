@@ -1,5 +1,10 @@
 import { prompt } from 'inquirer'
+import { flatMap } from 'rxjs/operators'
+import { resolve } from 'path'
 import { logError } from '../../utilities/log'
+import generatePackageFile from '../../generators/package.gen'
+import createFolder from '../../utilities/create-folder'
+import { commands, load } from 'npm'
 // import createFolder from '../../utils/create-folder'
 // import { lstatSync } from 'fs'
 
@@ -178,7 +183,24 @@ export default function () {
     }
   ])
     .then((res: newAppConfigRespinse) => {
-      // createFolder(res.fullname).subscribe()
+      createFolder(resolve(res.fullname))
+        .pipe(
+          flatMap(() => {
+            const baseDir = res.fullname
+            return generatePackageFile({
+              name: 'test'
+            }, baseDir)
+          })
+        ).subscribe((() => {
+          load({}, () => {
+            commands.install([], () => {
+
+            })
+          })
+          
+          // Sparky.exec('npm i')
+        }))
+     
     })
     .catch(err => {
       logError(err)
