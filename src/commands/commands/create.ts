@@ -5,6 +5,7 @@ import { logError } from '../../utilities/log'
 import generatePackageFile from '../../generators/package.gen'
 import createFolder from '../../utilities/create-folder'
 import { commands, load } from 'npm'
+import generateCoreAngular from '../../generators/angular-core.gen'
 
 interface newAppConfigRespinse {
   readonly fullname: string
@@ -206,6 +207,8 @@ export default function () {
               commands.install([res.fullname], (err) => {
                 if (err) {
                   logError(err.message)
+                } else {
+                  generateCoreAngular(res.fullname).subscribe()
                 }
               })
             }

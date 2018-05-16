@@ -3,7 +3,6 @@
   "rules": {
     "newline-per-chained-call": false,
     "no-unused-variable": true,
-    "no-unnecessary-class": true,
     "prefer-object-spread": true,
     "no-var-keyword": true,
     "no-let": true,
