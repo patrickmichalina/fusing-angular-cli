@@ -5,8 +5,6 @@ import { logError } from '../../utilities/log'
 import generatePackageFile from '../../generators/package.gen'
 import createFolder from '../../utilities/create-folder'
 import { commands, load } from 'npm'
-// import createFolder from '../../utils/create-folder'
-// import { lstatSync } from 'fs'
 
 interface newAppConfigRespinse {
   readonly fullname: string
@@ -192,15 +190,27 @@ export default function () {
             }, baseDir)
           })
         ).subscribe((() => {
-          load({}, () => {
-            commands.install([], () => {
-
-            })
+          load({
+            global: false,
+            prefix: res.fullname
+          }, (err, npm) => {
+            if (err) {
+              logError(err.message)
+            } else {
+              if (npm) {
+                
+                // tslint:disable-next-line:no-object-mutation
+                // npm.root && npm.root.
+              }
+              
+              commands.install([res.fullname], (err) => {
+                if (err) {
+                  logError(err.message)
+                }
+              })
+            }
           })
-          
-          // Sparky.exec('npm i')
         }))
-     
     })
     .catch(err => {
       logError(err)
