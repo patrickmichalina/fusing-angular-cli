@@ -1,5 +1,5 @@
 import { prompt } from 'inquirer'
-import { logError } from '../../utils/log'
+import { logError } from '../../utilities/log'
 // import createFolder from '../../utils/create-folder'
 // import { lstatSync } from 'fs'
 
