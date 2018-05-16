@@ -16,7 +16,7 @@ interface npmPackageConfig {
   readonly devDependencies?: StringDictionary
 }
 
-const ANGULAR_VERSION = "6.0.1"
+const ANGULAR_VERSION = "6.0.2"
 
 const coreAngularDeps = {
   "@angular/common": ANGULAR_VERSION,
