@@ -1,0 +1,17 @@
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic'
+import { AppModule } from '../app/app.module'
+import { NgModule } from '@angular/core'
+// import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+
+platformBrowserDynamic().bootstrapModule(AppModule)
+
+@NgModule({
+  declarations: [
+  ],
+  imports: [
+    // BrowserAnimationsModule,
+  ],
+  providers: [],
+  bootstrap: []
+})
+export class AppBrowserModule { }
