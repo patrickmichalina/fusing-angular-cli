@@ -32,24 +32,24 @@
     "prepublishOnly": "ts-node fuse --build"
   },
   "devDependencies": {
-    "@types/chalk": "2.2.0",
-    "@types/inquirer": "0.0.41",
-    "@types/table": "4.0.5",
-    "@types/yargs": "11.0.0",
-    "tslint": "5.10.0",
-    "tslint-immutable": "4.5.4",
-    "uglify-js": "3.3.25"
+    "@types/chalk": "^2.2.0",
+    "@types/inquirer": "^0.0.41",
+    "@types/table": "^4.0.5",
+    "@types/yargs": "^11.0.0",
+    "tslint": "^5.10.0",
+    "tslint-immutable": "^4.5.4",
+    "uglify-js": "^3.3.25"
   },
   "dependencies": {
-    "ajv": "6.5.0",
-    "chalk": "2.4.1",
-    "favicons": "5.1.1",
-    "fuse-box": "3.2.2",
-    "inquirer": "5.2.0",
-    "rxjs": "6.1.0",
-    "table": "4.0.3",
-    "ts-node": "6.0.3",
-    "typescript": "2.8.3",
-    "yargs": "11.0.0"
+    "ajv": "^6.5.0",
+    "chalk": "^2.4.1",
+    "favicons": "^5.1.1",
+    "fuse-box": "^3.2.2",
+    "inquirer": "^5.2.0",
+    "rxjs": "^6.1.0",
+    "table": "^4.0.3",
+    "ts-node": "^6.0.3",
+    "typescript": "^2.8.3",
+    "yargs": "^11.1.0"
   }
 }

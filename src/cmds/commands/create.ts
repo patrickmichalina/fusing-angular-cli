@@ -1,6 +1,6 @@
 import { prompt } from 'inquirer'
 import { logError } from '../../utils/log'
-import createFolder from '../../utils/create-folder'
+// import createFolder from '../../utils/create-folder'
 // import { lstatSync } from 'fs'
 
 interface newAppConfigRespinse {
@@ -9,7 +9,7 @@ interface newAppConfigRespinse {
 }
 
 export default function () {
-  console.log('Create a new Angular application\n')
+  console.log('Create an Angular application\n')
   prompt([
     {
       name: 'fullname',
@@ -20,6 +20,11 @@ export default function () {
       name: 'shortname',
       message: 'Application Short Name',
       default: 'fusing-ng'
+    },
+    {
+      name: 'appType',
+      type: 'confirm',
+      message: 'Server rendered (Angular Universal)?'
     },
     {
       type: 'list',
@@ -61,10 +66,6 @@ export default function () {
           checked: true
         },
         {
-          name: 'None',
-          value: 'none'
-        },
-        {
           name: 'AWS Serverless',
           value: 'aws',
           disabled: 'in development'
@@ -73,6 +74,10 @@ export default function () {
           name: 'Google Cloud Serverless',
           value: 'gcloud',
           disabled: 'in development'
+        },
+        {
+          name: 'None',
+          value: 'none'
         }
       ]
     },
@@ -93,21 +98,48 @@ export default function () {
         }
       ]
     },
+    // {
+    //   name: 'ga',
+    //   message: 'Include Google Analytics?',
+    //   type: 'expand',
+    //   choices: [
+    //     {
+    //       name: 'Yes',
+    //       value: 'true',
+    //       key: 'y'
+    //     },
+    //     {
+    //       key: 'n',
+    //       name: 'No',
+    //       value: 'false'
+    //     },
+    //   ]
+    // },
     {
-      name: 'ga',
-      message: 'Include Google Analytics?',
-      type: 'expand',
+      type: 'list',
+      name: 'ui-lib',
+      message: 'UI Library',
       choices: [
         {
-          name: 'Yes',
-          value: 'true',
-          key: 'y'
+          name: 'Angular Material',
+          value: 'material',
+          checked: false
         },
         {
-          key: 'n',
-          name: 'No',
-          value: 'false'
+          name: 'Bootstrap',
+          value: 'bootstrap',
+          checked: false
         },
+        {
+          name: 'Bulma',
+          value: 'bulma',
+          checked: false
+        },
+        {
+          name: 'None',
+          value: 'none',
+          checked: true
+        }
       ]
     },
     {
@@ -128,34 +160,25 @@ export default function () {
       message: 'Additional Packages',
       choices: [
         {
-          name: 'Angular Material',
-          value: 'material',
-          checked: false,
-          disabled: 'unavailable, in development'
-        },
-        {
           name: 'Angular Flex-Layout',
-          value: 'material',
-          checked: false,
-          disabled: 'unavailable, in development'
+          value: 'flex-layout',
+          checked: false
         },
         {
           name: 'Firebase',
           value: 'firebase',
-          checked: false,
-          disabled: 'unavailable, in development'
+          checked: false
         },
         {
           name: 'Angularytics2',
           value: 'angularytics2',
-          checked: false,
-          disabled: 'unavailable, in development'
+          checked: false
         }
       ]
     }
   ])
     .then((res: newAppConfigRespinse) => {
-      createFolder(res.fullname).subscribe()
+      // createFolder(res.fullname).subscribe()
     })
     .catch(err => {
       logError(err)
