@@ -1,7 +1,7 @@
 {
   "name": "fusing-angular-cli",
   "version": "0.0.14",
-  "description": "An Angular application generator and runner",
+  "description": "Angular application generator and runner",
   "main": ".build/index.js",
   "ts:main": "index.ts",
   "typings": "index.ts",
