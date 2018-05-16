@@ -1,5 +1,4 @@
 {
-  "favicon": {
-    "source": "test.png"
-  }
+  "version": "0.0.12",
+  "test": 1
 }

@@ -1,13 +1,12 @@
 import { logError, log } from './log'
-import { bindNodeCallback } from 'rxjs'
 import { catchError, tap, take } from 'rxjs/operators'
-import { lstat, mkdir } from 'fs'
+import { pathExists_, mkDir_ } from './rx-fs'
 
 export default function createFolder(dirPath: string) {
-  return bindNodeCallback(lstat)(dirPath)
+  return pathExists_(dirPath)
     .pipe(
       tap(stats => logError(`\nDirectory ${dirPath} alreay exists\n`)),
-      catchError(err => bindNodeCallback(mkdir)(dirPath)
+      catchError(err => mkDir_(dirPath)
         .pipe(
           catchError(err => {
             log(err)
