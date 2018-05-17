@@ -2,10 +2,11 @@ import { prompt } from 'inquirer'
 import { flatMap } from 'rxjs/operators'
 import { resolve } from 'path'
 import { logError } from '../../utilities/log'
-import generatePackageFile from '../../generators/package.gen'
-import createFolder from '../../utilities/create-folder'
 import { commands, load } from 'npm'
-import generateCoreAngular from '../../generators/angular-core.gen'
+import { generateCoreAngular } from '../../generators/angular-core.gen'
+import generatePackageFile from '../../generators/package.gen'
+import { mkDir_, pathExists_ } from '../../utilities/rx-fs'
+import { empty } from 'rxjs'
 
 interface newAppConfigRespinse {
   readonly fullname: string
@@ -182,15 +183,29 @@ export default function () {
     }
   ])
     .then((res: newAppConfigRespinse) => {
-      createFolder(resolve(res.fullname))
+      const path = resolve(res.fullname)
+      pathExists_(path)
         .pipe(
-          flatMap(() => {
-            const baseDir = res.fullname
-            return generatePackageFile({
-              name: 'test'
-            }, baseDir)
+          flatMap(exists => {
+            if (exists) {
+              logError(`An app already exists at ${path}`)
+              return empty()
+            } else {
+              return mkDir_(resolve(res.fullname))
+                .pipe(
+                  flatMap(() => {
+                    return generatePackageFile({
+                      name: 'test'
+                    }, res.fullname)
+                  }),
+                  flatMap(() => generateCoreAngular(res.fullname))
+                )
+            }
           })
-        ).subscribe((() => {
+        )
+
+
+        .subscribe((() => {
           load({
             global: false,
             prefix: res.fullname
@@ -198,17 +213,11 @@ export default function () {
             if (err) {
               logError(err.message)
             } else {
-              if (npm) {
-                
-                // tslint:disable-next-line:no-object-mutation
-                // npm.root && npm.root.
-              }
-              
               commands.install([res.fullname], (err) => {
                 if (err) {
                   logError(err.message)
                 } else {
-                  generateCoreAngular(res.fullname).subscribe()
+                  // generateCoreAngular(res.fullname).subscribe()
                 }
               })
             }

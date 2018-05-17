@@ -1,5 +1,5 @@
 import { writeFile, readFile, lstat, mkdir } from 'fs'
-import { bindNodeCallback, of } from 'rxjs'
+import { bindNodeCallback, of, empty } from 'rxjs'
 import { tap, catchError, map, flatMap } from 'rxjs/operators'
 import { logError, logFileCreated } from './log'
 
@@ -40,5 +40,5 @@ export function pathExists_(path: string) {
 }
 
 export function mkDir_(path: string) {
-  return bindNodeCallback(mkdir)(path)
+  return bindNodeCallback(mkdir)(path).pipe(catchError(() => of(undefined)))
 }
