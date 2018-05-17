@@ -1,10 +1,8 @@
 import { createServer } from 'http'
 import { expressApp } from './server.app'
-import { PORT } from '../config';
 
-const port = PORT
 const server = createServer(expressApp)
 
-server.listen(port, () => {
+server.listen(5000, () => {
   console.log('Angular Universal Server listening')
 })

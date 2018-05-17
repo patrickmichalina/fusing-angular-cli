@@ -2,11 +2,13 @@ import { prompt } from 'inquirer'
 import { flatMap } from 'rxjs/operators'
 import { resolve } from 'path'
 import { logError } from '../../utilities/log'
-import { commands, load } from 'npm'
+import { load } from 'npm'
 import { generateCoreAngular } from '../../generators/angular-core.gen'
 import generatePackageFile from '../../generators/package.gen'
 import { mkDir_, pathExists_ } from '../../utilities/rx-fs'
-import { empty } from 'rxjs'
+import { empty, forkJoin } from 'rxjs'
+import generateGitIgnore from '../../generators/gitignore.gen'
+import generateTsLint from '../../generators/tslint.gen'
 
 interface newAppConfigRespinse {
   readonly fullname: string
@@ -198,7 +200,11 @@ export default function () {
                       name: 'test'
                     }, res.fullname)
                   }),
-                  flatMap(() => generateCoreAngular(res.fullname))
+                  flatMap(() => forkJoin([
+                    generateCoreAngular(res.fullname),
+                    generateGitIgnore(path),
+                    generateTsLint(path)
+                  ]))
                 )
             }
           })
@@ -213,13 +219,13 @@ export default function () {
             if (err) {
               logError(err.message)
             } else {
-              commands.install([res.fullname], (err) => {
-                if (err) {
-                  logError(err.message)
-                } else {
-                  // generateCoreAngular(res.fullname).subscribe()
-                }
-              })
+              // commands.install([res.fullname], (err) => {
+              //   if (err) {
+              //     logError(err.message)
+              //   } else {
+              //     // generateCoreAngular(res.fullname).subscribe()
+              //   }
+              // })
             }
           })
         }))
