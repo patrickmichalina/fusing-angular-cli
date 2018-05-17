@@ -9,6 +9,7 @@ import { mkDir_, pathExists_ } from '../../utilities/rx-fs'
 import { empty, forkJoin } from 'rxjs'
 import generateGitIgnore from '../../generators/gitignore.gen'
 import generateTsLint from '../../generators/tslint.gen'
+import generateFngConfig from '../../generators/config.gen'
 
 interface newAppConfigRespinse {
   readonly fullname: string
@@ -203,7 +204,8 @@ export default function () {
                   flatMap(() => forkJoin([
                     generateCoreAngular(res.fullname),
                     generateGitIgnore(path),
-                    generateTsLint(path)
+                    generateTsLint(path),
+                    generateFngConfig(path)
                   ]))
                 )
             }

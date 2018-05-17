@@ -1,5 +1,5 @@
 import { writeFile, readFile, lstat, mkdir } from 'fs'
-import { bindNodeCallback, of, empty } from 'rxjs'
+import { bindNodeCallback, of } from 'rxjs'
 import { tap, catchError, map, flatMap } from 'rxjs/operators'
 import { logError, logFileCreated } from './log'
 

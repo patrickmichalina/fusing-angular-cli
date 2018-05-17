@@ -13,7 +13,6 @@ import { TransferHttpCacheModule } from '@nguniversal/common'
     BrowserModule.withServerTransition({ appId: 'my-app' }),
     RouterModule.forRoot([], { initialNavigation: true }),
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
