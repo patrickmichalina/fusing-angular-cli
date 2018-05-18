@@ -2,7 +2,7 @@ import { prompt } from 'inquirer'
 import { flatMap } from 'rxjs/operators'
 import { resolve } from 'path'
 import { logError } from '../utilities/log'
-import { load, commands } from 'npm'
+import { load } from 'npm'
 import { generateCoreAngular } from '../generators/angular-core.gen'
 import { mkDir_, pathExists_ } from '../utilities/rx-fs'
 import { empty, forkJoin } from 'rxjs'
@@ -11,6 +11,7 @@ import generateTsLint from '../generators/tslint.gen'
 import generateFngConfig from '../generators/config.gen'
 import generatePackageFile from '../generators/package.gen'
 import { command } from 'yargs'
+import { ANGULAR_UNIVERSAL_DEPS, ANGULAR_UNIVERSAL_EXPRESS_DEPS } from '../generators/deps.const'
 
 command('create', 'create a new application', (args) => {
   return args
@@ -204,7 +205,11 @@ function create() {
                 .pipe(
                   flatMap(() => {
                     return generatePackageFile({
-                      name: 'test'
+                      name: 'test',
+                      dependencies: {
+                        ...ANGULAR_UNIVERSAL_DEPS,
+                        ...ANGULAR_UNIVERSAL_EXPRESS_DEPS
+                      }
                     }, res.fullname)
                   }),
                   flatMap(() => forkJoin([
@@ -227,13 +232,13 @@ function create() {
             if (err) {
               logError(err.message)
             } else {
-              commands.install([res.fullname], (err) => {
-                if (err) {
-                  logError(err.message)
-                } else {
-                  // generateCoreAngular(res.fullname).subscribe()
-                }
-              })
+              // commands.install([res.fullname], (err) => {
+              //   if (err) {
+              //     logError(err.message)
+              //   } else {
+              //     // generateCoreAngular(res.fullname).subscribe()
+              //   }
+              // })
             }
           })
         }))

@@ -1,11 +1,13 @@
 import { writeJsonFile_ } from '../utilities/rx-fs'
 import { resolve } from 'path'
+import { ANGULAR_CORE_DEPS } from './deps.const'
 
 interface StringDictionary {
   readonly [key: string]: string
 }
 
 interface npmPackageConfig {
+  readonly [key: string]: any
   readonly name: string
   readonly description?: string
   readonly license?: string
@@ -16,46 +18,39 @@ interface npmPackageConfig {
   readonly devDependencies?: StringDictionary
 }
 
-const ANGULAR_VERSION = "6.0.2"
-
-const coreAngularDeps = {
-  "@angular/common": ANGULAR_VERSION,
-  "@angular/compiler": ANGULAR_VERSION,
-  "@angular/compiler-cli": ANGULAR_VERSION,
-  "@angular/core": ANGULAR_VERSION,
-  "@angular/http": ANGULAR_VERSION,
-  "@angular/platform-browser": ANGULAR_VERSION,
-  "@angular/platform-browser-dynamic": ANGULAR_VERSION,
-  "@angular/router": ANGULAR_VERSION,
-  "core-js": "2.5.6",
-  "rxjs": "6.1.0",
-  "typescript": "2.7.2",
-  "zone.js": "0.8.26"
+function sortStringDict(dict: StringDictionary) {
+  return Object
+    .keys(dict)
+    .sort()
+    .reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr]: dict[curr]
+      }
+    }, {})
 }
 
-const universalAngularDeps = {
-  "@angular/platform-server": ANGULAR_VERSION,
-  "@nguniversal/common": "6.0.0",
-  "@nguniversal/express-engine": "6.0.0"
-}
+export default function generatePackageFile(_config: npmPackageConfig, dirPath = '', filename = 'package.json') {
+  // const includeUniversalDeps = true
 
-const universalExpressDeps = {
-  "cookie-parser": "1.4.3",
-  "express": "4.16.3",
-  "express-minify-html": "0.12.0",
-  "shrink-rayed": "0.2.0"
-}
+  const deps: StringDictionary = {
+    ...ANGULAR_CORE_DEPS,
+    // ...(
+    //   includeUniversalDeps
+    //     ? { ...universalAngularDeps, ...universalExpressDeps }
+    //     : {}
+    // )
+  }
 
-export default function generatePackageFile(config: npmPackageConfig, dirPath = '', filename = 'package.json') {
-  const _config: npmPackageConfig = {
+  const config: npmPackageConfig = {
     version: '0.0.0',
     license: 'UNLICENSED',
     description: 'Angular app scaffolded by Fusing-Angular-CLI',
+    ..._config,
     dependencies: {
-      ...coreAngularDeps
+      ...sortStringDict({ ..._config.dependencies || {}, ...deps })
     },
-    devDependencies: {},
-    ...config
+    devDependencies: {}
   }
-  return writeJsonFile_(resolve(dirPath, filename), _config)
+  return writeJsonFile_(resolve(dirPath, filename), sortStringDict(config as StringDictionary))
 }
