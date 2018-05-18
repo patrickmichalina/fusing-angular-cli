@@ -61,7 +61,7 @@ const virtualIndex = (req: express.Request,
         req,
         res,
         document
-      });
+      })
     })
     .catch(() => writeFile(resolvedPath, '')
       .then(() => virtualIndex(req, res, document, path)))

@@ -33,6 +33,19 @@ const coreAngularDeps = {
   "zone.js": "0.8.26"
 }
 
+const universalAngularDeps = {
+  "@angular/platform-server": ANGULAR_VERSION,
+  "@nguniversal/common": "6.0.0",
+  "@nguniversal/express-engine": "6.0.0"
+}
+
+const universalExpressDeps = {
+  "cookie-parser": "1.4.3",
+  "express": "4.16.3",
+  "express-minify-html": "0.12.0",
+  "shrink-rayed": "0.2.0"
+}
+
 export default function generatePackageFile(config: npmPackageConfig, dirPath = '', filename = 'package.json') {
   const _config: npmPackageConfig = {
     version: '0.0.0',

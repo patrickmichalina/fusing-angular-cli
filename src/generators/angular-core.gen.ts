@@ -15,14 +15,23 @@ export function generateCoreAngular(projectDir: string) {
 }
 
 
-export function generateCoreAngularApp(projectDir: string) {
+export function generateCoreAngularApp(projectDir: string, universal = true) {
   const root = resolve(`${projectDir}/src`)
   const baseDir = resolve(root, 'app')
+
+  const appModulePrepped = appModuleTemplate
+    .replace(/^.*#TransferHttpCacheModuleImport.*$/mg, universal
+      ? 'import { TransferHttpCacheModule } from \'@nguniversal/common\''
+      : '')
+    .replace(/^.*#TransferHttpCacheModule.*$/mg, universal
+      ? '\u0020\u0020\u0020\u0020TransferHttpCacheModule,'
+      : '')
+
   return mkDir_(root)
     .pipe(
       flatMap(() => mkDir_(baseDir)),
       flatMap(() => forkJoin([
-        writeFile_(`${baseDir}/app.module.ts`, appModuleTemplate),
+        writeFile_(`${baseDir}/app.module.ts`, appModulePrepped),
         writeFile_(`${baseDir}/app.component.ts`, appComponentTemplate)
       ]))
     )
