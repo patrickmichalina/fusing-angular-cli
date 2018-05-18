@@ -31,16 +31,11 @@ function sortStringDict(dict: StringDictionary) {
 }
 
 export default function generatePackageFile(_config: npmPackageConfig, dirPath = '', filename = 'package.json') {
-  // const includeUniversalDeps = true
-
   const deps: StringDictionary = {
     ...ANGULAR_CORE_DEPS,
-    // ...(
-    //   includeUniversalDeps
-    //     ? { ...universalAngularDeps, ...universalExpressDeps }
-    //     : {}
-    // )
   }
+
+  const devDeps: StringDictionary = { }
 
   const config: npmPackageConfig = {
     version: '0.0.0',
@@ -50,7 +45,9 @@ export default function generatePackageFile(_config: npmPackageConfig, dirPath =
     dependencies: {
       ...sortStringDict({ ..._config.dependencies || {}, ...deps })
     },
-    devDependencies: {}
+    devDependencies: {
+      ...sortStringDict({ ..._config.devDependencies || {}, ...devDeps })
+    }
   }
   return writeJsonFile_(resolve(dirPath, filename), sortStringDict(config as StringDictionary))
 }

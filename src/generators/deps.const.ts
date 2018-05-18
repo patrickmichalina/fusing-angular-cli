@@ -1,5 +1,9 @@
 const ANGULAR_VERSION = "6.0.2"
 
+export const ANGULAR_CORE_DEV_DEPS = {
+  "@types/node": "10.0.6",
+}
+
 export const ANGULAR_CORE_DEPS = {
   "@angular/common": ANGULAR_VERSION,
   "@angular/compiler": ANGULAR_VERSION,
@@ -16,9 +20,15 @@ export const ANGULAR_CORE_DEPS = {
 }
 
 export const ANGULAR_UNIVERSAL_DEPS = {
+  "@angular/animations": ANGULAR_VERSION,
   "@angular/platform-server": ANGULAR_VERSION,
   "@nguniversal/common": "6.0.0",
   "@nguniversal/express-engine": "6.0.0"
+}
+
+export const ANGULAR_UNIVERSAL_DEV_DEPS = {
+  "@types/cookie-parser": "1.4.1",
+  "@types/express": "4.11.1"
 }
 
 export const ANGULAR_UNIVERSAL_EXPRESS_DEPS = {
