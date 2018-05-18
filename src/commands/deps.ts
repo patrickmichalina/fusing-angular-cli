@@ -1,6 +1,6 @@
 import { table } from 'table'
-import * as pkg from '../../../package.json'
-import { log } from '../../utilities/log'
+import { log } from '../utilities/log'
+import * as pkg from '../../package.json'
 
 function createTableString () {
   const deps = pkg.dependencies as { readonly [key: string]: string }

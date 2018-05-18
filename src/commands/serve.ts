@@ -1,4 +1,3 @@
-import serve from '../commands/serve'
 import { command } from 'yargs'
 
 command('serve [port]', 'serve your application', (args) => {
@@ -11,3 +10,7 @@ command('serve [port]', 'serve your application', (args) => {
   default: 5000,
   description: 'Http server port number'
 })
+
+function serve() {
+  console.log('Launching Serve Command')
+}
