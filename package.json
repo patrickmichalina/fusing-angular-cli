@@ -18,9 +18,7 @@
   "bin": {
     "fng": ".build/fng"
   },
-  "files": [
-    ".build"
-  ],
+  "files": [".build"],
   "engines": {
     "node": ">= 10.0.0"
   },
@@ -38,6 +36,7 @@
     "@types/npm": "^2.0.29",
     "@types/table": "^4.0.5",
     "@types/yargs": "^11.0.0",
+    "husky": "^0.14.3",
     "prettier": "^1.12.1",
     "pretty-quick": "^1.5.0",
     "tslint": "^5.10.0",
