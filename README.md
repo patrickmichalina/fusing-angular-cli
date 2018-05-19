@@ -1,6 +1,6 @@
 # Fusing Angular CLI
 
-WORK IN PROGRESS
+WARNING: WORK IN PROGRESS
 
 ## Prerequisites
 
