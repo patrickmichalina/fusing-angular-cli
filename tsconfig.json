@@ -8,8 +8,7 @@
     "noUnusedLocals": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "typeRoots": [
-      "tools/manual-typings"
-    ]
+    "lib": ["es6", "dom"],
+    "typeRoots": ["tools/manual-typings", "node_modules/@types"]
   }
 }

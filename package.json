@@ -25,25 +25,32 @@
     "node": ">= 10.0.0"
   },
   "scripts": {
+    "test": "ts-node fuse test",
+    "test.watch": "chokidar '(src|spec)/**/*.ts' -c 'ts-node fuse test' --initial --silent",
     "start": "ts-node fuse",
+    "start.dev": "ts-node fuse & npm run test.watch",
     "build": "ts-node fuse --build",
     "lint": "tslint --project tsconfig.json",
     "prepare": "tslint --project tsconfig.json",
     "prepublishOnly": "ts-node fuse --build",
-    "precommit": "npm run lint && pretty-quick --staged --no-semi --single-quote"
+    "precommit": "npm run test && npm run lint && pretty-quick --staged --no-semi --single-quote"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/inquirer": "^0.0.41",
     "@types/npm": "^2.0.29",
+    "@types/sinon": "^4.3.3",
     "@types/table": "^4.0.5",
     "@types/yargs": "^11.0.0",
+    "chokidar-cli": "^1.2.0",
     "condition-circle": "^2.0.1",
+    "fuse-test-runner": "^1.0.16",
     "husky": "^0.14.3",
     "last-release-git": "0.0.3",
     "prettier": "^1.12.1",
     "pretty-quick": "^1.5.0",
     "semantic-release": "^15.4.1",
+    "sinon": "^5.0.7",
     "tslint": "^5.10.0",
     "tslint-immutable": "^4.5.4",
     "uglify-js": "^3.3.25",

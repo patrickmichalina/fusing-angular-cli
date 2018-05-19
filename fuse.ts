@@ -1,4 +1,4 @@
-import { FuseBox, QuantumPlugin, JSONPlugin, RawPlugin } from 'fuse-box'
+import { FuseBox, QuantumPlugin, JSONPlugin, RawPlugin, Sparky } from 'fuse-box'
 import { resolve } from 'path'
 import { argv } from 'yargs'
 import shabang from './tools/scripts/fuse-shebang'
@@ -10,7 +10,8 @@ const outputPath = `${outputDir}/${appName}`
 const absOutputPath = resolve(outputPath)
 const isProdBuild = argv.build
 
-const fuse = FuseBox.init({
+const fuseConfig = FuseBox.init({
+  log: false,
   cache: !isProdBuild,
   target: 'server@es5',
   homeDir,
@@ -24,20 +25,30 @@ const fuse = FuseBox.init({
   },
   plugins: [
     JSONPlugin(),
-    RawPlugin([".txt"]),
-    isProdBuild && QuantumPlugin({
-      bakeApiIntoBundle: appName,
-      treeshake: true,
-      uglify: true
-    })
+    RawPlugin(['.txt']),
+    isProdBuild &&
+      QuantumPlugin({
+        bakeApiIntoBundle: appName,
+        treeshake: true,
+        uglify: true
+      })
   ]
 })
 
-const bundle = fuse.bundle(appName)
-!isProdBuild && bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))
-bundle.instructions('> [src/index.ts]')
+const bundle = fuseConfig.bundle(appName)
 
-fuse.run().then(bp => {
-  const bundle = bp.bundles.get(appName)
-  bundle && shabang(bundle, absOutputPath)
+Sparky.task('test', () => {
+  bundle.watch(`(src|spec)/**`)
+  bundle.test('[spec/**/**.ts]', {})
+})
+
+Sparky.task('default', () => {
+  !isProdBuild &&
+    bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))
+  bundle.instructions('> [src/index.ts]')
+
+  fuseConfig.run().then(bp => {
+    const bundle = bp.bundles.get(appName)
+    bundle && shabang(bundle, absOutputPath)
+  })
 })

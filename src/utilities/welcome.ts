@@ -1,8 +1,9 @@
 import clearTerminal from './clear'
 import { log } from './log'
-import * as spash from "./.splash.txt"
+import * as splash from './.splash.txt'
 
-export default function () {
+export default function welcome() {
   clearTerminal()
-  log(spash)
+  log(splash)
+  return splash
 }
