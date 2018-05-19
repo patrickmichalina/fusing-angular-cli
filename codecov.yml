@@ -1,0 +1,24 @@
+codecov:
+  allow_coverage_offsets: true
+  notify:
+    require_ci_to_pass: true
+  
+coverage:
+  precision: 2
+  round: down
+  range: "78...100"
+  ignore:
+    - "tools"
+    - "client/app/styleguide/*"
+    - "client/app/mini-player/mini-player.component.ts"
+
+  status:
+    project:
+      default:
+        enabled: yes
+        threshold: 0.25%
+    patch:
+      default:
+        enabled: yes
+        target: 0%
+    changes: false
