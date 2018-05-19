@@ -1,6 +1,6 @@
 {
   "name": "fusing-angular-cli",
-  "version": "0.0.16",
+  "version": "0.0.0-development",
   "description": "Angular application generator and runner",
   "main": ".build/index.js",
   "ts:main": "index.ts",
@@ -8,12 +8,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fusing-angular/fusing-angular"
+    "url": "https://github.com/patrickmichalina/fusing-angular-cli"
   },
   "author": {
     "name": "Patrick Michalina",
     "email": "patrickmichalina@mac.com",
-    "url": "https://github.com/fusing-angular/cli"
+    "url": "https://github.com/patrickmichalina/fusing-angular-cli"
   },
   "bin": {
     "fng": ".build/fng"
@@ -28,7 +28,8 @@
     "lint": "tslint --project tsconfig.json",
     "prepare": "tslint --project tsconfig.json",
     "prepublishOnly": "ts-node fuse --build",
-    "precommit": "pretty-quick --staged --no-semi --single-quote"
+    "precommit": "pretty-quick --staged --no-semi --single-quote",
+    "prepush": "validate-commit-msg && npm run lint"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
@@ -39,6 +40,7 @@
     "husky": "^0.14.3",
     "prettier": "^1.12.1",
     "pretty-quick": "^1.5.0",
+    "semantic-release": "^15.4.1",
     "tslint": "^5.10.0",
     "tslint-immutable": "^4.5.4",
     "uglify-js": "^3.3.25"

@@ -6,11 +6,11 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "78...100"
+  range: "70...100"
   ignore:
     - "tools"
-    - "client/app/styleguide/*"
-    - "client/app/mini-player/mini-player.component.ts"
+    - ".vscode"
+    - "fuse.ts"
 
   status:
     project:
