@@ -18,7 +18,9 @@
   "bin": {
     "fng": ".build/fng"
   },
-  "files": [".build"],
+  "files": [
+    ".build"
+  ],
   "engines": {
     "node": ">= 10.0.0"
   },
@@ -45,7 +47,8 @@
     "semantic-release": "^15.4.1",
     "tslint": "^5.10.0",
     "tslint-immutable": "^4.5.4",
-    "uglify-js": "^3.3.25"
+    "uglify-js": "^3.3.25",
+    "validate-commit-msg": "^2.14.0"
   },
   "dependencies": {
     "ajv": "^6.5.0",
