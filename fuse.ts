@@ -38,7 +38,6 @@ const fuseConfig = FuseBox.init({
 const bundle = fuseConfig.bundle(appName)
 
 Sparky.task('test', () => {
-  bundle.watch(`(src|spec)/**`)
   bundle.test('[spec/**/**.ts]', {})
 })
 
