@@ -33,7 +33,7 @@
     "lint": "tslint --project tsconfig.json",
     "prepare": "tslint --project tsconfig.json",
     "prepublishOnly": "ts-node fuse --build",
-    "precommit": "npm run test && npm run lint && pretty-quick --staged --no-semi --single-quote"
+    "precommit": "npm run test && npm run lint && pretty-quick --no-semi --single-quote"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
