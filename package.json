@@ -53,7 +53,7 @@
     "sinon": "^5.0.7",
     "tslint": "^5.10.0",
     "tslint-immutable": "^4.5.4",
-    "uglify-js": "^3.3.25",
+    "uglify-js": "^3.3.26",
     "validate-commit-msg": "^2.14.0"
   },
   "dependencies": {
