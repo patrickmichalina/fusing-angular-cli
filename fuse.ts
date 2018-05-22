@@ -42,9 +42,9 @@ Sparky.task('test', () => {
 })
 
 Sparky.task('default', () => {
+  bundle.instructions('> [src/index.ts]')
   !isProdBuild &&
     bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))
-  bundle.instructions('> [src/index.ts]')
 
   fuseConfig.run().then(bp => {
     const bundle = bp.bundles.get(appName)

@@ -28,9 +28,9 @@
     "lint": "tslint --project tsconfig.json",
     "test": "ts-node fuse test",
     "test.watch": "chokidar '(src|spec)/**/*.ts' -c 'ts-node fuse test' --initial --silent",
-    "build": "ts-node fuse --build",
-    "prepare": "ts-node fuse --build",
-    "precommit": "npm run test && npm run lint && pretty-quick --no-semi --single-quote",
+    "build": "ts-node fuse default --build",
+    "prepublishOnly": "ts-node fuse default --build",
+    "precommit": "npm run test && npm run lint && pretty-quick --staged --no-semi --single-quote",
     "start": "ts-node fuse",
     "start.dev": "ts-node fuse & npm run test.watch"
   },
