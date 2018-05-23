@@ -41,7 +41,7 @@ Sparky.task('test', () => {
   bundle.test('[spec/**/**.ts]', {})
 })
 
-Sparky.task('default', () => {
+Sparky.task('bundle', () => {
   bundle.instructions('> [src/index.ts]')
   !isProdBuild &&
     bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))
