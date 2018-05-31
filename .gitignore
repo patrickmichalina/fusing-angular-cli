@@ -81,3 +81,4 @@ src/config.json
 .dist/
 .build/
 fusing-angular-demo-app/
+fusing-angular.json

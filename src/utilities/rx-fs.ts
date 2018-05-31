@@ -6,15 +6,15 @@ import { logError, logFileCreated } from './log'
 export function writeFileSafely_(path: string, data: any, overwrite = false) {
   return overwrite
     ? writeFile_(path, data)
-    : pathExists_(path)
-      .pipe(
-        flatMap(exists => {
-          if (exists) {
-            logError(`Path ${path} already exists`)
-            return of(undefined)
-          }
-          return writeFile_(path, data)
-        })
+    : pathExists_(path).pipe(
+        flatMap(
+          exists =>
+            exists
+              ? of(undefined).pipe(
+                  tap(() => logError(`Path ${path} already exists`))
+                )
+              : writeFile_(path, data)
+        )
       )
 }
 
@@ -35,7 +35,7 @@ export function readFile_(path: string) {
 export function pathExists_(path: string) {
   return bindNodeCallback(lstat)(path).pipe(
     map(() => true),
-    catchError(err => of(false)),
+    catchError(err => of(false))
   )
 }
 
