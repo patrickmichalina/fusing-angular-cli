@@ -3,6 +3,7 @@ import { command } from 'yargs'
 import { Subject } from 'rxjs'
 // import { log } from '../utilities/log'
 import { startWith } from 'rxjs/operators'
+import { log } from '../utilities/log'
 
 command(
   'create',
@@ -44,7 +45,7 @@ const source = new Subject<any>()
 const prompts = source.pipe(startWith(Q_FULL_NAME.question))
 
 function create() {
-  // log('Create an Angular application\n')
+  log('Create an Angular application\n')
   ;(prompt(prompts as any) as any).ui.process.subscribe(
     function(response: any) {
       // QUESTION_DICT[response.name] && source.next(QUESTION_DICT[response.name])
