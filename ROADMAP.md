@@ -4,7 +4,6 @@
 - [x] CLI build and release tooling
 - [ ] Server (Universal) based Angular app schaffolding
 - [ ] Browser based angular app schaffolding (no server, static assets only)
-- [ ] Favicon generation command, ex: `fng favicon`
 - [ ] Serve command for both dev and production runtimes, ex: `fng serve --prod --sw --aot`
 
 ### Future Work
@@ -12,36 +11,38 @@
 #### Core
 
 - [ ] Component/Pipe/Directive/Service stubb generator command, ex: `fng gen component my-awesome-comp`
+- [ ] Favicon generation command, ex: `fng favicon`
 
-#### UI
+#### UI Options
 
 - [ ] Angular Material
 - [ ] Bootstrap
 - [ ] Bulma
 
-#### Backend
+#### Backend Options
 
 - [ ] Firebase
 
-#### Continous Integration
+#### Continous Integration Options
 
-- [ ] CircleCI
+- [ ] Circle CI
+- [ ] Travis
 
-#### Unit/Component Test Frameworks
+#### Unit/Component Test Framework Options
 
 - [ ] Jest
 - [ ] Mocha
+- [ ] FuseBox
 
-#### E2E Test Frameworks
+#### E2E Test Framework Options
 
 - [ ] Nightmare
 - [ ] Cypress
 
-#### Deployment Options (server + client-only builds)
-
-The goal is to allow command line provisions of new applications.
+#### Deployment Options
+The goal is to allow command line provisioning of new applications.
 
 - [ ] Heroku
-- [ ] Google Cloud serverless
-- [ ] AWS serverless deployments
-- [ ] Azure deplouments
+- [ ] Azure
+- [ ] Google Cloud (serverless)
+- [ ] AWS (serverless)
