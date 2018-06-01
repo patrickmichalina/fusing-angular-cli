@@ -1,13 +1,13 @@
-import { prompt, Question } from 'inquirer'
+import { prompt } from 'inquirer'
 import { command } from 'yargs'
 import { Subject } from 'rxjs'
+// import { log } from '../utilities/log'
+import { startWith } from 'rxjs/operators'
 
 command(
   'create',
   'create a new application',
-  args => {
-    return args
-  },
+  args => args,
   args => {
     create()
   }
@@ -17,33 +17,49 @@ command(
 //   readonly fullname: string
 //   readonly shortname: string
 // }
-
-const prompts = new Subject<Question>()
-
-function create() {
-  console.log('Create an Angular application\n')
-  const p = prompt(prompts.asObservable() as any)
-
-  prompts.next({
-    name: 'test',
+const Q_FULL_NAME = {
+  trigger: '=>',
+  question: {
+    name: 'fullname',
     message: 'Application Full Name',
     default: 'fusing-angular-demo-app'
-  })
+  }
+}
 
-  prompts.complete()
+// const Q_SHORT_NAME = {
+//   trigger: 'fullname',
+//   question: {
+//     name: 'shortname',
+//     message: 'Application Short Name',
+//     default: 'fusing-ng'
+//   }
+// }
 
-  p.then(a => {
-    // const d = prompt(prompts.asObservable() as any)
-  })
+// const QUESTION_DICT = {
+//   [Q_FULL_NAME.trigger]: Q_FULL_NAME.question,
+//   [Q_SHORT_NAME.trigger]: Q_SHORT_NAME.question
+// }
 
-  // (p as any).ui.process.subscribe(
-  //   (a: any, b: any) => {
-  //     console.log(a),
-  //     console.log(b)
-  //   },
-  //   console.log,
-  //   console.log
-  // )
+const source = new Subject<any>()
+const prompts = source.pipe(startWith(Q_FULL_NAME.question))
+
+function create() {
+  // log('Create an Angular application\n')
+  ;(prompt(prompts as any) as any).ui.process.subscribe(
+    function(response: any) {
+      // QUESTION_DICT[response.name] && source.next(QUESTION_DICT[response.name])
+      // switch (response.name) {
+      //   case Q_SHORT_NAME.trigger:
+      //     source.next(Q_SHORT_NAME.question)
+      //     break
+      //   default:
+      // }
+    },
+    console.log,
+    function() {
+      console.log('Completed')
+    }
+  )
 
   // prompts.complete()
 
