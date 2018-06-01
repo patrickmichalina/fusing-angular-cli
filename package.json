@@ -38,7 +38,7 @@
     "@types/chalk": "^2.2.0",
     "@types/inquirer": "^0.0.41",
     "@types/npm": "^2.0.29",
-    "@types/sinon": "^4.3.3",
+    "@types/sinon": "^5.0.1",
     "@types/table": "^4.0.5",
     "@types/yargs": "^11.0.0",
     "chokidar-cli": "^1.2.0",
