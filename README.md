@@ -16,11 +16,16 @@ The CLI has dependencies that require Node 10.0.0 or higher, together with NPM 6
 
 ## Table of Contents
 
-* [Installation](#installation)
-* [Usage](#usage)
-* [Updating Fusing Angular CLI](#updating-fusing-angular-cli)
-* [Developing Fusing Angular CLI](#developing-fusing-angular-cli)
-* [License](#license)
+- [Roadmap](#roadmap)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Updating Fusing Angular CLI](#updating-fusing-angular-cli)
+- [Developing Fusing Angular CLI](#developing-fusing-angular-cli)
+- [License](#license)
+
+## Roadmap
+
+You can learn more about what we aim to achieve by reading our [roadmap](ROADMAP.md)
 
 ## Installation
 
