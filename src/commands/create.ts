@@ -1,9 +1,8 @@
 import { prompt } from 'inquirer'
 import { command } from 'yargs'
 import { Subject } from 'rxjs'
-// import { log } from '../utilities/log'
 import { startWith } from 'rxjs/operators'
-import { log } from '../utilities/log'
+import { log, logError } from '../utilities/log'
 
 command(
   'create',
@@ -18,82 +17,94 @@ command(
 //   readonly fullname: string
 //   readonly shortname: string
 // }
-const Q_FULL_NAME = {
-  trigger: '=>',
+
+interface QustionResponse {
+  readonly name: string
+  readonly answer: string | boolean
+}
+
+interface QuestionWrapper {
+  readonly question: {
+    readonly name: string
+    readonly message: string
+    readonly default: string
+  }
+  readonly answerHandler: (
+    response: QustionResponse,
+    stream: Subject<any>
+  ) => void
+}
+
+const Q_FULL_NAME: QuestionWrapper = {
   question: {
     name: 'fullname',
     message: 'Application Full Name',
     default: 'fusing-angular-demo-app'
+  },
+  answerHandler: (response: QustionResponse, stream: Subject<any>) => {
+    stream.next(Q_SHORT_NAME.question)
   }
 }
 
-// const Q_SHORT_NAME = {
-//   trigger: 'fullname',
-//   question: {
-//     name: 'shortname',
-//     message: 'Application Short Name',
-//     default: 'fusing-ng'
-//   }
-// }
+const Q_SHORT_NAME = {
+  question: {
+    name: 'shortname',
+    message: 'Application Short Name',
+    default: 'fusing-ng'
+  },
+  answerHandler: (response: QustionResponse, stream: Subject<any>) => {
+    stream.next(Q_APP_TYPE.question)
+  }
+}
 
-// const QUESTION_DICT = {
-//   [Q_FULL_NAME.trigger]: Q_FULL_NAME.question,
-//   [Q_SHORT_NAME.trigger]: Q_SHORT_NAME.question
-// }
+const Q_APP_TYPE = {
+  question: {
+    type: 'confirm',
+    name: 'isUniversalApp',
+    message: 'Server rendered (Angular Universal)?'
+  },
+  answerHandler: (response: QustionResponse, stream: Subject<any>) => {
+    // const isUniversal = response.answer as Boolean
+    // console.log(isUniversal)
+    stream.complete()
+  }
+}
+
+const Q_TEST_RUNNERS = {
+  question: {
+    type: 'list',
+    name: 'test-runner',
+    message: 'Application Short Name',
+    choices: [{ name: 'Jest', value: 'jest' }, { name: 'None' }]
+  },
+  answerHandler: (response: QustionResponse, stream: Subject<any>) => {
+    stream.complete()
+  }
+}
+
+const QUESTION_DICT = [
+  Q_FULL_NAME,
+  Q_SHORT_NAME,
+  Q_TEST_RUNNERS,
+  Q_APP_TYPE
+].reduce(
+  (acc, curr) => {
+    return { ...acc, [curr.question.name]: curr }
+  },
+  {} as { readonly [key: string]: QuestionWrapper }
+)
 
 const source = new Subject<any>()
 const prompts = source.pipe(startWith(Q_FULL_NAME.question))
 
 function create() {
   log('Create an Angular application\n')
-  ;(prompt(prompts as any) as any).ui.process.subscribe(
-    function(response: any) {
-      // QUESTION_DICT[response.name] && source.next(QUESTION_DICT[response.name])
-      // switch (response.name) {
-      //   case Q_SHORT_NAME.trigger:
-      //     source.next(Q_SHORT_NAME.question)
-      //     break
-      //   default:
-      // }
-    },
-    console.log,
-    function() {
-      console.log('Completed')
-    }
-  )
-
-  // prompts.complete()
+  const prm = prompt(prompts as any) as any
+  prm.ui.process.subscribe(function(response: QustionResponse) {
+    QUESTION_DICT[response.name].answerHandler(response, source)
+  }, logError)
 
   // prompt([
-  //   {
-  //     name: 'fullname',
-  //     message: 'Application Full Name',
-  //     default: 'fusing-angular-demo-app'
-  //   },
-  //   {
-  //     name: 'shortname',
-  //     message: 'Application Short Name',
-  //     default: 'fusing-ng'
-  //   },
-  //   {
-  //     name: 'appType',
-  //     type: 'confirm',
-  //     message: 'Server rendered (Angular Universal)?'
-  //   },
-  //   // {
-  //   //   type: 'list',
-  //   //   name: 'test-runner',
-  //   //   message: 'Unit Test Runner',
-  //   //   choices: [
-  //   //     {
-  //   //       name: 'Jest',
-  //   //       value: 'jest'
-  //   //     },
-  //   //     {
-  //   //       name: 'None'
-  //   //     }
-  //   //   ]
-  //   // },
   //   // {
   //   //   type: 'list',
   //   //   name: 'test-runner',

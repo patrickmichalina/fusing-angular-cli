@@ -1,4 +1,4 @@
-const ANGULAR_VERSION = '6.0.3'
+const ANGULAR_VERSION = '6.1.0-beta.0'
 
 export const ANGULAR_CORE_DEV_DEPS = {
   '@types/node': '10.0.6'

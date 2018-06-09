@@ -1,4 +1,3 @@
-
 import { writeFileSafely_ } from '../utilities/rx-fs'
 import { resolve } from 'path'
 import * as tslint from '../templates/tslint.json.txt'
