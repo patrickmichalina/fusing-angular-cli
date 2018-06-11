@@ -1,5 +1,3 @@
-import { empty } from 'rxjs'
-import { logError } from './log'
 import { map, catchError } from 'rxjs/operators'
 import { readFile_ } from './rx-fs'
 import * as favs from 'favicons'
@@ -12,7 +10,7 @@ export interface FaviconConfig {
   readonly configuration: favs.Configuration
 }
 
-interface FusingAngularConfig {
+export interface FusingAngularConfig {
   readonly favicon: FaviconConfig
 }
 
@@ -21,10 +19,9 @@ export default function readConfig_() {
     map<Buffer, any>(file => JSON.parse(file.toString())),
     map<any, FusingAngularConfig>(obj => obj),
     catchError(err => {
-      logError(
+      throw new Error(
         'Could not find fusing-angular.json configuration file.\nTry running "fng create" and creating a new application first.'
       )
-      return empty()
     })
   )
 }

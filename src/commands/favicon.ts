@@ -1,11 +1,14 @@
 import { command } from 'yargs'
 import { logInfoWithBackground, logError, logInfo } from '../utilities/log'
-import { flatMap, map, first } from 'rxjs/operators'
+import { flatMap, map, first, filter } from 'rxjs/operators'
 import { rxFavicons } from '../utilities/rx-favicon'
-import readConfig_, { FaviconConfig } from '../utilities/read-config'
 import { writeFile_, mkDirDeep_ } from '../utilities/rx-fs'
 import { resolve } from 'path'
 import { forkJoin } from 'rxjs'
+import readConfig_, {
+  FaviconConfig,
+  FusingAngularConfig
+} from '../utilities/read-config'
 
 command(
   'favicon',
@@ -18,12 +21,25 @@ command(
   }
 )
 
+function requireFaviconConfig(config: FusingAngularConfig) {
+  return config && config.favicon
+    ? true
+    : (() => {
+        throw new Error('Favicon configuration required.')
+      })()
+}
+
+function mapFaviconConfig(config: FusingAngularConfig) {
+  return config && config.favicon
+}
+
 function favicon() {
   logInfoWithBackground('Generating Favicons...')
 
   readConfig_()
     .pipe(
-      map(a => a.favicon),
+      filter(requireFaviconConfig),
+      map(mapFaviconConfig),
       flatMap(rxFavicons, (config: FaviconConfig, result) => ({
         config,
         result
@@ -32,9 +48,16 @@ function favicon() {
         response => mkDirDeep_(response.config.output),
         response => ({ ...response })
       ),
-      // map(response => response.result.images.map(file => writeFile_(resolve(`${response.config.output}/${file.name}`), file.contents))),
-      // flatMap(fileWriteObs => forkJoin(fileWriteObs)),
+      map(response =>
+        response.result.images.map(file =>
+          writeFile_(
+            resolve(`${response.config.output}/${file.name}`),
+            file.contents
+          )
+        )
+      ),
+      flatMap(fileWriteObs => forkJoin(fileWriteObs)),
       first()
     )
-    .subscribe(undefined, logError)
+    .subscribe(logInfo, logError)
 }
