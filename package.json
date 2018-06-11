@@ -30,7 +30,7 @@
     "test.watch": "chokidar '(src|spec)/**/*.ts' -c 'ts-node fuse test' --initial --silent",
     "build": "ts-node fuse bundle --build",
     "prepublishOnly": "ts-node fuse bundle --build",
-    "precommit": "npm run test && npm run lint && pretty-quick --staged --no-semi --single-quote",
+    "precommit": "pretty-quick --staged --no-semi --single-quote",
     "start": "ts-node fuse bundle",
     "start.dev": "ts-node fuse bundle & npm run test.watch"
   },
@@ -56,6 +56,7 @@
     "validate-commit-msg": "^2.14.0"
   },
   "dependencies": {
+    "@types/favicons": "^5.1.0",
     "ajv": "^6.5.0",
     "chalk": "^2.4.1",
     "favicons": "^5.1.1",

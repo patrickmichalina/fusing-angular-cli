@@ -10,7 +10,7 @@ export function logError(msg: string) {
   log(chalk.bgRedBright(`Error: ${msg}`))
 }
 
-export function logInfo(msg: string) {
+export function logInfo(msg: any) {
   log(chalk.blue(msg))
 }
 
