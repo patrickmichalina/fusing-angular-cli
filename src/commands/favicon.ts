@@ -1,6 +1,6 @@
 import { command } from 'yargs'
 import { logInfoWithBackground, logError, logInfo } from '../utilities/log'
-import { flatMap, map, first, filter } from 'rxjs/operators'
+import { flatMap, map, first, filter, tap } from 'rxjs/operators'
 import { rxFavicons } from '../utilities/rx-favicon'
 import { writeFile_, mkDirDeep_ } from '../utilities/rx-fs'
 import { resolve } from 'path'
@@ -33,6 +33,10 @@ function mapFaviconConfig(config: FusingAngularConfig) {
   return config && config.favicon
 }
 
+function logDirectoryCheck() {
+  logInfoWithBackground('Creating favicons directories')
+}
+
 function favicon() {
   logInfoWithBackground('Generating Favicons...')
 
@@ -44,6 +48,7 @@ function favicon() {
         config,
         result
       })),
+      tap(logDirectoryCheck),
       flatMap(
         response => mkDirDeep_(response.config.output),
         response => ({ ...response })
