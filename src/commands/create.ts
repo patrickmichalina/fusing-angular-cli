@@ -1,8 +1,9 @@
 import { prompt } from 'inquirer'
 import { command } from 'yargs'
-import { Subject } from 'rxjs'
-import { startWith } from 'rxjs/operators'
-import { log, logError } from '../utilities/log'
+import { Subject, BehaviorSubject } from 'rxjs'
+import { startWith, shareReplay, first, map, tap } from 'rxjs/operators'
+import { log, logError, logInfoWithBackground } from '../utilities/log'
+import clearTerminal from '../utilities/clear'
 
 command(
   'create',
@@ -23,6 +24,10 @@ interface QustionResponse {
   readonly answer: string | boolean
 }
 
+interface AnswersDictionary {
+  readonly [key: string]: any
+}
+
 interface QuestionWrapper {
   readonly question: {
     readonly name: string
@@ -31,6 +36,7 @@ interface QuestionWrapper {
   }
   readonly answerHandler: (
     response: QustionResponse,
+    current: AnswersDictionary,
     stream: Subject<any>
   ) => void
 }
@@ -41,7 +47,11 @@ const Q_FULL_NAME: QuestionWrapper = {
     message: 'Application Full Name',
     default: 'fusing-angular-demo-app'
   },
-  answerHandler: (response: QustionResponse, stream: Subject<any>) => {
+  answerHandler: (
+    response: QustionResponse,
+    current: AnswersDictionary,
+    stream: Subject<any>
+  ) => {
     stream.next(Q_SHORT_NAME.question)
   }
 }
@@ -52,7 +62,11 @@ const Q_SHORT_NAME = {
     message: 'Application Short Name',
     default: 'fusing-ng'
   },
-  answerHandler: (response: QustionResponse, stream: Subject<any>) => {
+  answerHandler: (
+    response: QustionResponse,
+    current: AnswersDictionary,
+    stream: Subject<any>
+  ) => {
     stream.next(Q_APP_TYPE.question)
   }
 }
@@ -63,9 +77,11 @@ const Q_APP_TYPE = {
     name: 'isUniversalApp',
     message: 'Server rendered (Angular Universal)?'
   },
-  answerHandler: (response: QustionResponse, stream: Subject<any>) => {
-    // const isUniversal = response.answer as Boolean
-    // console.log(isUniversal)
+  answerHandler: (
+    response: QustionResponse,
+    current: AnswersDictionary,
+    stream: Subject<any>
+  ) => {
     stream.complete()
   }
 }
@@ -77,7 +93,11 @@ const Q_TEST_RUNNERS = {
     message: 'Application Short Name',
     choices: [{ name: 'Jest', value: 'jest' }, { name: 'None' }]
   },
-  answerHandler: (response: QustionResponse, stream: Subject<any>) => {
+  answerHandler: (
+    response: QustionResponse,
+    current: AnswersDictionary,
+    stream: Subject<any>
+  ) => {
     stream.complete()
   }
 }
@@ -95,14 +115,82 @@ const QUESTION_DICT = [
 )
 
 const source = new Subject<any>()
-const prompts = source.pipe(startWith(Q_FULL_NAME.question))
+const finalConfigSource = new Subject()
+const collector = new BehaviorSubject({})
+const prompts = source.pipe(
+  startWith(Q_FULL_NAME.question),
+  shareReplay()
+)
+const finalConfig_ = finalConfigSource.pipe(
+  map(() => collector.getValue()),
+  first()
+)
+
+function displayGeneratingAppText() {
+  logInfoWithBackground('Generating App....\n')
+}
 
 function create() {
   log('Create an Angular application\n')
   const prm = prompt(prompts as any) as any
-  prm.ui.process.subscribe(function(response: QustionResponse) {
-    QUESTION_DICT[response.name].answerHandler(response, source)
-  }, logError)
+  prm.ui.process.subscribe(
+    function(response: QustionResponse) {
+      const merged = {
+        ...collector.getValue(),
+        ...Object.keys(response).reduce(acc => {
+          return {
+            ...acc,
+            [response.name]: response.answer
+          }
+        }, {})
+      }
+      collector.next(merged)
+      QUESTION_DICT[response.name].answerHandler(response, merged, source)
+    },
+    logError,
+    () => finalConfigSource.next()
+  )
+
+  // Once we have our final configuration for the app, lets go through the build steps
+  finalConfig_
+    .pipe(
+      tap(clearTerminal),
+      tap(displayGeneratingAppText)
+    )
+    .subscribe(config => {
+      //     const path = resolve(res.fullname)
+      //     pathExists_(path)
+      //       .pipe(
+      //         flatMap(exists => {
+      //           if (exists) {
+      //             logError(`An app already exists at ${path}`)
+      //             return empty()
+      //           } else {
+      //             return mkDir_(resolve(res.fullname))
+      //               .pipe(
+      //                 flatMap(() => {
+      //                   return generatePackageFile({
+      //                     name: 'test',
+      //                     dependencies: {
+      //                       ...ANGULAR_UNIVERSAL_DEPS,
+      //                       ...ANGULAR_UNIVERSAL_EXPRESS_DEPS
+      //                     },
+      //                     devDependencies: {
+      //                       ...ANGULAR_CORE_DEV_DEPS,
+      //                       ...ANGULAR_UNIVERSAL_DEV_DEPS
+      //                     }
+      //                   }, res.fullname)
+      //                 }),
+      //                 flatMap(() => forkJoin([
+      //                   generateCoreAngular(res.fullname),
+      //                   generateGitIgnore(path),
+      //                   generateTsLint(path),
+      //                   generateFngConfig(path)
+      //                 ]))
+      //               )
+      //           }
+      //         })
+    })
 
   // prompt([
   //   // {
