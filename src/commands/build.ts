@@ -1,11 +1,17 @@
 import { command } from 'yargs'
+import { logInfo } from '../utilities/log'
 
-command('build', 'build your application', (args) => {
-  return args
-}, (args) => {
-  build()
-})
+command(
+  'build',
+  'build your application',
+  args => {
+    return args
+  },
+  args => {
+    build()
+  }
+)
 
 function build() {
-  console.log('Launching Init Command')
+  logInfo('Launching Init Command')
 }

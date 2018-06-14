@@ -1,6 +1,10 @@
 import { command } from 'yargs'
-import { take } from 'rxjs/operators'
-import { logInfoWithBackground, logPrettyJson } from '../utilities/log'
+import { take, tap } from 'rxjs/operators'
+import {
+  logInfoWithBackground,
+  logPrettyJson,
+  logError
+} from '../utilities/log'
 import readConfig_ from '../utilities/read-config'
 
 command(
@@ -14,9 +18,15 @@ command(
   }
 )
 
-function config() {
+function displayMessage() {
   logInfoWithBackground('Viewing CLI configuration\n')
+}
+
+function config() {
   readConfig_()
-    .pipe(take(1))
-    .subscribe(logPrettyJson)
+    .pipe(
+      tap(displayMessage),
+      take(1)
+    )
+    .subscribe(logPrettyJson, logError)
 }
