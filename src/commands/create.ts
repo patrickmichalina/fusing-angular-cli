@@ -1,23 +1,44 @@
 import { prompt } from 'inquirer'
 import { command } from 'yargs'
-import { Subject, BehaviorSubject } from 'rxjs'
-import { startWith, shareReplay, first, map, tap } from 'rxjs/operators'
+import { Subject, BehaviorSubject, of, forkJoin } from 'rxjs'
+import {
+  startWith,
+  shareReplay,
+  first,
+  map,
+  tap,
+  flatMap,
+  filter,
+  take
+} from 'rxjs/operators'
 import { log, logError, logInfoWithBackground } from '../utilities/log'
+import { pathExists_, mkDirAndContinueIfExists_ } from '../utilities/rx-fs'
+import { resolve } from 'path'
+import { generateCoreAngular } from '../generators/angular-core.gen'
+import generateGitIgnore from '../generators/gitignore.gen'
+import generateTsLint from '../generators/tslint.gen'
+import generateFngConfig from '../generators/config.gen'
 import clearTerminal from '../utilities/clear'
+import generatePackageFile from '../generators/package.gen'
+import {
+  ANGULAR_UNIVERSAL_DEPS,
+  ANGULAR_UNIVERSAL_EXPRESS_DEPS,
+  ANGULAR_CORE_DEV_DEPS,
+  ANGULAR_UNIVERSAL_DEV_DEPS
+} from '../generators/deps.const'
 
 command(
-  'create',
+  'create [overwrite]',
   'create a new application',
   args => args,
   args => {
-    create()
+    const force = args.o || false
+    create(force)
   }
-)
-
-// interface newAppConfigRespinse {
-//   readonly fullname: string
-//   readonly shortname: string
-// }
+).option('overwrite', {
+  alias: 'o',
+  description: 'Overwrite existing application folder'
+})
 
 interface QustionResponse {
   readonly name: string
@@ -25,7 +46,12 @@ interface QustionResponse {
 }
 
 interface AnswersDictionary {
+  readonly fullname: string
+}
+
+interface WorkingAnswersDictionary {
   readonly [key: string]: any
+  readonly fullname?: string
 }
 
 interface QuestionWrapper {
@@ -36,7 +62,7 @@ interface QuestionWrapper {
   }
   readonly answerHandler: (
     response: QustionResponse,
-    current: AnswersDictionary,
+    current: WorkingAnswersDictionary,
     stream: Subject<any>
   ) => void
 }
@@ -49,7 +75,7 @@ const Q_FULL_NAME: QuestionWrapper = {
   },
   answerHandler: (
     response: QustionResponse,
-    current: AnswersDictionary,
+    current: WorkingAnswersDictionary,
     stream: Subject<any>
   ) => {
     stream.next(Q_SHORT_NAME.question)
@@ -64,7 +90,7 @@ const Q_SHORT_NAME = {
   },
   answerHandler: (
     response: QustionResponse,
-    current: AnswersDictionary,
+    current: WorkingAnswersDictionary,
     stream: Subject<any>
   ) => {
     stream.next(Q_APP_TYPE.question)
@@ -79,7 +105,7 @@ const Q_APP_TYPE = {
   },
   answerHandler: (
     response: QustionResponse,
-    current: AnswersDictionary,
+    current: WorkingAnswersDictionary,
     stream: Subject<any>
   ) => {
     stream.complete()
@@ -95,7 +121,7 @@ const Q_TEST_RUNNERS = {
   },
   answerHandler: (
     response: QustionResponse,
-    current: AnswersDictionary,
+    current: WorkingAnswersDictionary,
     stream: Subject<any>
   ) => {
     stream.complete()
@@ -116,7 +142,7 @@ const QUESTION_DICT = [
 
 const source = new Subject<any>()
 const finalConfigSource = new Subject()
-const collector = new BehaviorSubject({})
+const collector = new BehaviorSubject<WorkingAnswersDictionary>({})
 const prompts = source.pipe(
   startWith(Q_FULL_NAME.question),
   shareReplay()
@@ -126,11 +152,68 @@ const finalConfig_ = finalConfigSource.pipe(
   first()
 )
 
+interface IntermediateModel {
+  readonly config: AnswersDictionary
+  readonly shouldTerminate: boolean
+}
+
 function displayGeneratingAppText() {
   logInfoWithBackground('Generating App....\n')
 }
 
-function create() {
+function displayWarningApplicationAlreadyExists(res: IntermediateModel) {
+  res.shouldTerminate && logError('Application already exists. exiting')
+}
+
+function mapWorkingAnswersToFinal(config: WorkingAnswersDictionary) {
+  return {
+    ...config
+  } as AnswersDictionary
+}
+
+function checkConfigAndCanProceed(res: IntermediateModel): boolean {
+  return !res.shouldTerminate
+}
+
+function toEnsureProjectDirectoryExists(mdl: IntermediateModel) {
+  return mkDirAndContinueIfExists_(resolve(mdl.config.fullname))
+}
+
+function checkIfProjectPathExists(overwrite: boolean) {
+  return function(config: AnswersDictionary) {
+    return overwrite ? of(false) : pathExists_(config.fullname)
+  }
+}
+
+function projectPathCheckToIntermediateModel(
+  config: AnswersDictionary,
+  shouldTerminate: boolean
+) {
+  return {
+    config,
+    shouldTerminate
+  }
+}
+
+function genNpmPackageJson(name: string, overwrite = false) {
+  return generatePackageFile(
+    {
+      name,
+      dependencies: {
+        ...ANGULAR_UNIVERSAL_DEPS,
+        ...ANGULAR_UNIVERSAL_EXPRESS_DEPS
+      },
+      devDependencies: {
+        ...ANGULAR_CORE_DEV_DEPS,
+        ...ANGULAR_UNIVERSAL_DEV_DEPS
+      }
+    },
+    overwrite,
+    name
+  )
+}
+
+function create(overwriteExisting = false) {
   log('Create an Angular application\n')
   const prm = prompt(prompts as any) as any
   prm.ui.process.subscribe(
@@ -155,41 +238,29 @@ function create() {
   finalConfig_
     .pipe(
       tap(clearTerminal),
-      tap(displayGeneratingAppText)
+      tap(displayGeneratingAppText),
+      map(mapWorkingAnswersToFinal),
+      flatMap(
+        checkIfProjectPathExists(overwriteExisting),
+        projectPathCheckToIntermediateModel
+      ),
+      tap(displayWarningApplicationAlreadyExists),
+      filter(checkConfigAndCanProceed),
+      flatMap(toEnsureProjectDirectoryExists, im => im),
+      flatMap(im => {
+        const path = resolve(im.config.fullname)
+        return forkJoin([
+          genNpmPackageJson(im.config.fullname, overwriteExisting),
+          generateCoreAngular(im.config.fullname),
+          generateGitIgnore(path, overwriteExisting),
+          generateTsLint(path, overwriteExisting),
+          generateFngConfig(path, overwriteExisting)
+        ])
+      }),
+      take(1)
     )
-    .subscribe(config => {
-      //     const path = resolve(res.fullname)
-      //     pathExists_(path)
-      //       .pipe(
-      //         flatMap(exists => {
-      //           if (exists) {
-      //             logError(`An app already exists at ${path}`)
-      //             return empty()
-      //           } else {
-      //             return mkDir_(resolve(res.fullname))
-      //               .pipe(
-      //                 flatMap(() => {
-      //                   return generatePackageFile({
-      //                     name: 'test',
-      //                     dependencies: {
-      //                       ...ANGULAR_UNIVERSAL_DEPS,
-      //                       ...ANGULAR_UNIVERSAL_EXPRESS_DEPS
-      //                     },
-      //                     devDependencies: {
-      //                       ...ANGULAR_CORE_DEV_DEPS,
-      //                       ...ANGULAR_UNIVERSAL_DEV_DEPS
-      //                     }
-      //                   }, res.fullname)
-      //                 }),
-      //                 flatMap(() => forkJoin([
-      //                   generateCoreAngular(res.fullname),
-      //                   generateGitIgnore(path),
-      //                   generateTsLint(path),
-      //                   generateFngConfig(path)
-      //                 ]))
-      //               )
-      //           }
-      //         })
+    .subscribe(res => {
+      // logInfoWithBackground('MADE IT')
     })
 
   // prompt([
@@ -330,41 +401,6 @@ function create() {
   //   //   ]
   //   // }
   // ])
-  //   .then((res: newAppConfigRespinse) => {
-  //     const path = resolve(res.fullname)
-  //     pathExists_(path)
-  //       .pipe(
-  //         flatMap(exists => {
-  //           if (exists) {
-  //             logError(`An app already exists at ${path}`)
-  //             return empty()
-  //           } else {
-  //             return mkDir_(resolve(res.fullname))
-  //               .pipe(
-  //                 flatMap(() => {
-  //                   return generatePackageFile({
-  //                     name: 'test',
-  //                     dependencies: {
-  //                       ...ANGULAR_UNIVERSAL_DEPS,
-  //                       ...ANGULAR_UNIVERSAL_EXPRESS_DEPS
-  //                     },
-  //                     devDependencies: {
-  //                       ...ANGULAR_CORE_DEV_DEPS,
-  //                       ...ANGULAR_UNIVERSAL_DEV_DEPS
-  //                     }
-  //                   }, res.fullname)
-  //                 }),
-  //                 flatMap(() => forkJoin([
-  //                   generateCoreAngular(res.fullname),
-  //                   generateGitIgnore(path),
-  //                   generateTsLint(path),
-  //                   generateFngConfig(path)
-  //                 ]))
-  //               )
-  //           }
-  //         })
-  //       )
-
   //       .subscribe((() => {
   //         load({
   //           global: false,

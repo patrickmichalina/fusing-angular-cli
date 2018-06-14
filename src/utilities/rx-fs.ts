@@ -98,6 +98,19 @@ export function mkDir_(path: string) {
   return bindNodeCallback(mkdir)(path)
 }
 
+export function mkDirAndContinueIfExists_(path: string) {
+  return mkDir_(path).pipe(
+    catchError(
+      err =>
+        err.errno === -17
+          ? of(undefined)
+          : (() => {
+              throw err
+            })()
+    )
+  )
+}
+
 export function mkDirDeep_(path: string): Observable<any> {
   return pathExistsDeep_(path).pipe(map(a => a.map(b => mkdirSync(b))))
 }

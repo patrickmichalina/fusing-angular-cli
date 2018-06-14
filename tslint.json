@@ -26,7 +26,6 @@
     "no-this": true,
     "no-class": true,
     "no-expression-statement": false,
-    "no-if-statement": true,
-    "no-loop": true
+    "no-if-statement": true
   }
 }

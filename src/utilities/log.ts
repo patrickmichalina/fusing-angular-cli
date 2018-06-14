@@ -6,7 +6,11 @@ export function logPrettyJson(json?: Object) {
   log(JSON.stringify(json, undefined, 2))
 }
 
-export function logError(msg: string) {
+export function logError(msg: any) {
+  log(chalk.bgRedBright(msg))
+}
+
+export function logErrorWithPrefix(msg: any) {
   log(chalk.bgRedBright(`Error: ${msg}`))
 }
 
@@ -19,5 +23,5 @@ export function logInfoWithBackground(msg: string) {
 }
 
 export function logFileCreated(path: string) {
-  logInfo(`Created file at ${path}`)
+  logInfo(`File created/updated at ${path}`)
 }

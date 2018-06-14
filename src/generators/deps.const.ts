@@ -1,7 +1,7 @@
-const ANGULAR_VERSION = '^6.1.0-beta.0'
+const ANGULAR_VERSION = '^6.1.0-beta.1'
 
 export const ANGULAR_CORE_DEV_DEPS = {
-  '@types/node': '10.0.6'
+  '@types/node': '10.3.3'
 }
 
 export const ANGULAR_CORE_DEPS = {
@@ -28,7 +28,7 @@ export const ANGULAR_UNIVERSAL_DEPS = {
 
 export const ANGULAR_UNIVERSAL_DEV_DEPS = {
   '@types/cookie-parser': '1.4.1',
-  '@types/express': '4.11.1'
+  '@types/express': '4.16.0'
 }
 
 export const ANGULAR_UNIVERSAL_EXPRESS_DEPS = {
