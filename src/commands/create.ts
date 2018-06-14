@@ -1,6 +1,13 @@
 import { prompt } from 'inquirer'
 import { command } from 'yargs'
-import { Subject, BehaviorSubject, of, forkJoin } from 'rxjs'
+import {
+  Subject,
+  BehaviorSubject,
+  of,
+  forkJoin,
+  Observable,
+  Observer
+} from 'rxjs'
 import {
   startWith,
   shareReplay,
@@ -26,6 +33,8 @@ import {
   ANGULAR_CORE_DEV_DEPS,
   ANGULAR_UNIVERSAL_DEV_DEPS
 } from '../generators/deps.const'
+import { load, commands } from 'npm'
+import generateTsConfig from '../generators/tsconfig.gen'
 
 command(
   'create [overwrite]',
@@ -47,6 +56,7 @@ interface QustionResponse {
 
 interface AnswersDictionary {
   readonly fullname: string
+  readonly isUniversalApp: boolean
 }
 
 interface WorkingAnswersDictionary {
@@ -185,6 +195,12 @@ function checkIfProjectPathExists(overwrite: boolean) {
   }
 }
 
+function test(name: string) {
+  return function() {
+    return npmInstall(name)
+  }
+}
+
 function projectPathCheckToIntermediateModel(
   config: AnswersDictionary,
   shouldTerminate: boolean
@@ -195,22 +211,56 @@ function projectPathCheckToIntermediateModel(
   }
 }
 
-function genNpmPackageJson(name: string, overwrite = false) {
+function genNpmPackageJson(
+  name: string,
+  isUniversalApp: boolean,
+  overwrite = false
+) {
   return generatePackageFile(
     {
       name,
       dependencies: {
-        ...ANGULAR_UNIVERSAL_DEPS,
-        ...ANGULAR_UNIVERSAL_EXPRESS_DEPS
+        ...((isUniversalApp && ANGULAR_UNIVERSAL_DEPS) || {}),
+        ...((isUniversalApp && ANGULAR_UNIVERSAL_EXPRESS_DEPS) || {})
       },
       devDependencies: {
         ...ANGULAR_CORE_DEV_DEPS,
-        ...ANGULAR_UNIVERSAL_DEV_DEPS
+        ...((isUniversalApp && ANGULAR_UNIVERSAL_DEV_DEPS) || {})
       }
     },
     overwrite,
     name
   )
+}
+
+function npmInstall(name: string) {
+  return Observable.create((obs: Observer<any>) => {
+    load(
+      {
+        global: false,
+        prefix: name
+      },
+      (err, npm) => {
+        // tslint:disable-next-line:no-if-statement
+        if (err) {
+          logError(err.message)
+          obs.error(err)
+          obs.complete()
+        } else {
+          commands.install([name], err => {
+            // tslint:disable-next-line:no-if-statement
+            if (err) {
+              logError(err.message)
+              obs.error(err)
+              obs.complete()
+            } else {
+              obs.complete()
+            }
+          })
+        }
+      }
+    )
+  })
 }
 
 function create(overwriteExisting = false) {
@@ -250,18 +300,23 @@ function create(overwriteExisting = false) {
       flatMap(im => {
         const path = resolve(im.config.fullname)
         return forkJoin([
-          genNpmPackageJson(im.config.fullname, overwriteExisting),
+          genNpmPackageJson(
+            im.config.fullname,
+            im.config.isUniversalApp,
+            overwriteExisting
+          ).pipe(flatMap(test(im.config.fullname))),
           generateCoreAngular(im.config.fullname),
           generateGitIgnore(path, overwriteExisting),
           generateTsLint(path, overwriteExisting),
-          generateFngConfig(path, overwriteExisting)
+          generateFngConfig(path, overwriteExisting),
+          generateTsConfig(path, overwriteExisting)
         ])
-      }),
+      }, im => im),
       take(1)
     )
     .subscribe(res => {
-      // logInfoWithBackground('MADE IT')
-    })
+      // noop
+    }, process.exit)
 
   // prompt([
   //   // {
@@ -401,28 +456,4 @@ function create(overwriteExisting = false) {
   //   //   ]
   //   // }
   // ])
-  //       .subscribe((() => {
-  //         load({
-  //           global: false,
-  //           prefix: res.fullname
-  //         }, (err, npm) => {
-  //           if (err) {
-  //             logError(err.message)
-  //           } else {
-  //             const load = true
-  //             load && commands.install([res.fullname], (err) => {
-  //               if (err) {
-  //                 logError(err.message)
-  //               } else {
-  //                 // generateCoreAngular(res.fullname).subscribe()
-  //               }
-  //             })
-  //           }
-  //         })
-  //       }))
-  //   })
-  //   .catch(err => {
-  //     logError(err)
-  //     process.exit(0)
-  //   })
 }
