@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
-    "@types/inquirer": "^0.0.41",
+    "@types/inquirer": "^0.0.42",
     "@types/npm": "^2.0.29",
     "@types/sinon": "^4.3.3",
     "@types/yargs": "^11.0.0",
