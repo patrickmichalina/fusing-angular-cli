@@ -10,14 +10,25 @@ export interface FaviconConfig {
   readonly configuration: favs.Configuration
 }
 
+export interface FuseBoxBaseConfig {
+  readonly homeDir: string
+  readonly outputDir: string
+}
+
+export interface FuseBoxConfig {
+  readonly server: FuseBoxBaseConfig
+  readonly browser: FuseBoxBaseConfig
+}
+
 export interface FusingAngularConfig {
   readonly favicon: FaviconConfig
+  readonly fusebox: FuseBoxConfig
 }
 
 export default function readConfig_() {
   return readFile_(configPath).pipe(
     map<Buffer, any>(file => JSON.parse(file.toString())),
-    map<any, FusingAngularConfig>(obj => obj),
+    map<any, FusingAngularConfig>(obj => obj), // TODO: add validation handler here
     catchError(err => {
       throw new Error(
         'Could not find fusing-angular.json configuration file.\nTry running "fng create" and creating a new application first.'

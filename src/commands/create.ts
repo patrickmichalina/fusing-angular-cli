@@ -35,6 +35,7 @@ import {
 } from '../generators/deps.const'
 import { load, commands } from 'npm'
 import generateTsConfig from '../generators/tsconfig.gen'
+import generateTsDeclartionFile from '../generators/declarations.gen'
 
 command(
   'create [overwrite]',
@@ -304,12 +305,14 @@ function create(overwriteExisting = false) {
             im.config.fullname,
             im.config.isUniversalApp,
             overwriteExisting
-          ).pipe(flatMap(test(im.config.fullname))),
+          ),
+          // .pipe(flatMap(test(im.config.fullname))),
           generateCoreAngular(im.config.fullname),
           generateGitIgnore(path, overwriteExisting),
           generateTsLint(path, overwriteExisting),
           generateFngConfig(path, overwriteExisting),
-          generateTsConfig(path, overwriteExisting)
+          generateTsConfig(path, overwriteExisting),
+          generateTsDeclartionFile(path, overwriteExisting)
         ])
       }, im => im),
       take(1)

@@ -2,11 +2,12 @@ import * as express from 'express'
 import * as cookieParser from 'cookie-parser'
 import { resolve } from 'path'
 import { ngExpressEngine } from '@nguniversal/express-engine'
-import { stat, writeFile } from 'fs/promises'
-declare const AppServerModule: any
+import { AppServerModule } from './server.angular.module'
+import { stat, writeFile } from 'fs'
+import * as config from '../../fusing-angular.json'
 
-const shrinkRay = require('shrink-rayed')
-const minifyHTML = require('express-minify-html')
+// const shrinkRay = require('shrink-rayed')
+// const minifyHTML = require('express-minify-html')
 // const xhr2 = require('xhr2')
 
 // tslint:disable-next-line:no-object-mutation
@@ -30,23 +31,10 @@ const publicDir = `${dir}/public`
 // }
 
 expressApp.use(cookieParser())
-expressApp.use(shrinkRay())
-expressApp.use(
-  minifyHTML({
-    override: true,
-    exception_url: false,
-    htmlMinifier: {
-      removeComments: true,
-      collapseWhitespace: true,
-      collapseBooleanAttributes: true,
-      removeAttributeQuotes: false,
-      minifyJS: true
-    }
-  })
-)
+// expressApp.use(shrinkRay())
 
 expressApp.use('/favicon.ico', (req, res) => res.sendStatus(204)) // TODO: FAVICONS
-expressApp.use('/js', express.static(`${publicDir}/js`))
+expressApp.use('/js', express.static(`${publicDir}/js`, { fallthrough: false }))
 expressApp.set('view engine', 'html')
 expressApp.engine('html', ngExpressEngine({ bootstrap: AppServerModule }))
 
@@ -54,17 +42,19 @@ const virtualIndex = (req: express.Request,
   res: express.Response, document: string, path = `${publicDir}/index.html`) => {
 
   const resolvedPath = resolve(path)
-
-  stat(resolvedPath)
-    .then(() => {
+  stat(resolvedPath, (err, stats) => {
+    if (err) {
+      writeFile(resolvedPath, '', err => {
+        virtualIndex(req, res, document, path)
+      })
+    } else {
       res.render(resolvedPath, {
         req,
         res,
         document
       })
-    })
-    .catch(() => writeFile(resolvedPath, '')
-      .then(() => virtualIndex(req, res, document, path)))
+    }
+  })
 }
 
 expressApp.get('**', (req, res) => {
