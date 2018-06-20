@@ -37,6 +37,7 @@
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/inquirer": "^0.0.41",
+    "@types/favicons": "^5.1.0",
     "@types/npm": "^2.0.29",
     "@types/sinon": "^5.0.1",
     "@types/yargs": "^11.0.0",
@@ -48,15 +49,14 @@
     "last-release-git": "0.0.3",
     "prettier": "^1.13.5",
     "pretty-quick": "^1.6.0",
-    "semantic-release": "^15.5.2",
+    "semantic-release": "^15.6.0",
     "sinon": "^5.1.1",
     "tslint": "^5.10.0",
     "tslint-immutable": "^4.6.0",
-    "uglify-js": "^3.4.0",
+    "uglify-js": "^3.4.1",
     "validate-commit-msg": "^2.14.0"
   },
   "dependencies": {
-    "@types/favicons": "^5.1.0",
     "ajv": "^6.5.1",
     "chalk": "^2.4.1",
     "favicons": "^5.1.1",
