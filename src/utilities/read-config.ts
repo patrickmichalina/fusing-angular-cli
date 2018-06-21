@@ -21,11 +21,16 @@ export interface FuseBoxServerConfig extends FuseBoxBaseConfig {
 
 export interface FuseBoxBrowserConfig extends FuseBoxBaseConfig {
   readonly browserModule: string
+  readonly prod: {
+    readonly uglify: boolean
+    readonly treeshake: boolean
+  }
 }
 
 export interface FuseBoxConfig {
   readonly server: FuseBoxServerConfig
   readonly browser: FuseBoxBrowserConfig
+  readonly verbose: boolean
 }
 
 export interface FusingAngularConfig {
