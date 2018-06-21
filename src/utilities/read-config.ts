@@ -15,9 +15,17 @@ export interface FuseBoxBaseConfig {
   readonly outputDir: string
 }
 
+export interface FuseBoxServerConfig extends FuseBoxBaseConfig {
+  readonly serverModule: string
+}
+
+export interface FuseBoxBrowserConfig extends FuseBoxBaseConfig {
+  readonly browserModule: string
+}
+
 export interface FuseBoxConfig {
-  readonly server: FuseBoxBaseConfig
-  readonly browser: FuseBoxBaseConfig
+  readonly server: FuseBoxServerConfig
+  readonly browser: FuseBoxBrowserConfig
 }
 
 export interface FusingAngularConfig {
