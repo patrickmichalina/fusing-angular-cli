@@ -305,8 +305,7 @@ function create(overwriteExisting = false) {
             im.config.fullname,
             im.config.isUniversalApp,
             overwriteExisting
-          ),
-          // .pipe(flatMap(test(im.config.fullname))),
+          ).pipe(flatMap(test(im.config.fullname))),
           generateCoreAngular(im.config.fullname),
           generateGitIgnore(path, overwriteExisting),
           generateTsLint(path, overwriteExisting),

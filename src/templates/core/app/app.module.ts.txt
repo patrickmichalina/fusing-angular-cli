@@ -1,18 +1,18 @@
 import { AppComponent } from './app.component'
-import { BrowserModule } from '@angular/platform-browser'
 import { NgModule } from '@angular/core'
-import { RouterModule } from '@angular/router'
-#TransferHttpCacheModuleImport
+import { TransferHttpCacheModule } from '@nguniversal/common'
+import { BrowserModule } from '@angular/platform-browser'
+import { AppRoutingModule } from './app.routing.module'
+import { SharedModule } from './app.shared.module'
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
+  exports: [AppComponent],
   imports: [
-    #TransferHttpCacheModule
+    AppRoutingModule,
+    TransferHttpCacheModule,
+    SharedModule.forRoot(),
     BrowserModule.withServerTransition({ appId: 'my-app' }),
-    RouterModule.forRoot([], { initialNavigation: true }),
-  ],
-  bootstrap: [AppComponent]
+  ]
 })
 export class AppModule { }

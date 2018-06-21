@@ -13,8 +13,9 @@ import * as config from '../../fusing-angular.json'
 // tslint:disable-next-line:no-object-mutation
 // xhr2.prototype._restrictedHeaders.cookie = false
 
+const base = config.base || ''
 const expressApp = express()
-const dir = resolve('./.dist')
+const dir = resolve(base, '.dist')
 const publicDir = `${dir}/public`
 
 // const staticOptions = {

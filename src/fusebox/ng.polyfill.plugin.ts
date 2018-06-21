@@ -37,7 +37,6 @@ export const NG_POLY_BROWSER_IE: ReadonlyArray<any> = [
 ]
 export const NG_POLY_BROWSER: ReadonlyArray<any> = [
   ...NG_POLY_BASE,
-  ...NG_POLY_BROWSER_IE,
   'zone.js/dist/zone'
 ]
 export const NG_POLY_BROWSER_IE_ANIMATIONS: ReadonlyArray<any> = [

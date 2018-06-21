@@ -1,4 +1,9 @@
-import { appModuleTemplate, appComponentTemplate } from '../templates/core/app'
+import {
+  appModuleTemplate,
+  appComponentTemplate,
+  appRoutingModuleTemplate,
+  appSharedModuleTemplate
+} from '../templates/core/app'
 import { writeFile_, mkDirAndContinueIfExists_ } from '../utilities/rx-fs'
 import { forkJoin } from 'rxjs'
 import { resolve } from 'path'
@@ -39,6 +44,11 @@ export function generateCoreAngularApp(projectDir: string, universal = true) {
     flatMap(() =>
       forkJoin([
         writeFile_(`${baseDir}/app.module.ts`, appModulePrepped),
+        writeFile_(`${baseDir}/app.shared.module.ts`, appSharedModuleTemplate),
+        writeFile_(
+          `${baseDir}/app.routing.module.ts`,
+          appRoutingModuleTemplate
+        ),
         writeFile_(`${baseDir}/app.component.ts`, appComponentTemplate)
       ])
     )
