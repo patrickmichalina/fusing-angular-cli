@@ -2,10 +2,10 @@ import { command } from 'yargs'
 import { take, tap } from 'rxjs/operators'
 import { logInfo } from '../utilities/log'
 import { FuseBox, JSONPlugin } from 'fuse-box'
-import readConfig_ from '../utilities/read-config'
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
 import { NgPolyfillPlugin } from '../fusebox/ng.polyfill.plugin'
+import readConfig_ from '../utilities/read-config'
 
 // function test() {
 //   // const fuseBrowser = FuseBox.init({
@@ -128,18 +128,18 @@ function serve() {
 
       fuseBrowser
         .bundle('vendor')
-        .watch('src/**')
-        .instructions(` ~ src/browser/app.browser.module.ts`)
+        .watch(`**`)
+        .instructions(` ~ ${config.fusebox.browser.browserModule}`)
 
       fuseBrowser
         .bundle('app')
-        .watch('src/**')
-        .instructions(` !> [src/browser/app.browser.module.ts]`)
+        .watch(`**`)
+        .instructions(` !> [${config.fusebox.browser.browserModule}]`)
 
       fuseServer
         .bundle('server')
-        .watch(`src/**`)
-        .instructions(' > [src/server/server.ts]')
+        .watch(`**`)
+        .instructions(` > [${config.fusebox.server.serverModule}]`)
         .completed(proc => proc.start())
 
       fuseServer.run()
