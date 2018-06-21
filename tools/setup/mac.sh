@@ -19,6 +19,6 @@ brew upgrade
 # install nvm
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 
-# for auto switching nvm when switching folders
-npm install -g avn avn-nvm
+# for auto switching node version when switching folders in terminal/console
+npm install -g avn avn-nvm avn-n
 avn setup

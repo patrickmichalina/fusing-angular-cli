@@ -19,8 +19,7 @@ interface npmPackageConfig {
 }
 
 function sortStringDict(dict: StringDictionary) {
-  return Object
-    .keys(dict)
+  return Object.keys(dict)
     .sort()
     .reduce((acc, curr) => {
       return {
@@ -30,12 +29,17 @@ function sortStringDict(dict: StringDictionary) {
     }, {})
 }
 
-export default function generatePackageFile(_config: npmPackageConfig, dirPath = '', filename = 'package.json') {
+export default function generatePackageFile(
+  _config: npmPackageConfig,
+  overwrite = false,
+  dirPath = '',
+  filename = 'package.json'
+) {
   const deps: StringDictionary = {
-    ...ANGULAR_CORE_DEPS,
+    ...ANGULAR_CORE_DEPS
   }
 
-  const devDeps: StringDictionary = { }
+  const devDeps: StringDictionary = {}
 
   const config: npmPackageConfig = {
     version: '0.0.0',
@@ -43,11 +47,15 @@ export default function generatePackageFile(_config: npmPackageConfig, dirPath =
     description: 'Angular app scaffolded by Fusing-Angular-CLI',
     ..._config,
     dependencies: {
-      ...sortStringDict({ ..._config.dependencies || {}, ...deps })
+      ...sortStringDict({ ...(_config.dependencies || {}), ...deps })
     },
     devDependencies: {
-      ...sortStringDict({ ..._config.devDependencies || {}, ...devDeps })
+      ...sortStringDict({ ...(_config.devDependencies || {}), ...devDeps })
     }
   }
-  return writeJsonFile_(resolve(dirPath, filename), sortStringDict(config as StringDictionary))
+  return writeJsonFile_(
+    resolve(dirPath, filename),
+    sortStringDict(config as StringDictionary),
+    overwrite
+  )
 }

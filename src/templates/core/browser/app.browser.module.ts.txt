@@ -1,12 +1,17 @@
 import { AppModule } from '../app/app.module'
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic'
 import { NgModule } from '@angular/core'
-
-platformBrowserDynamic().bootstrapModule(AppModule)
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic'
+import { BrowserTransferStateModule, BrowserModule } from '@angular/platform-browser'
+import { AppComponent } from '../app/app.component'
 
 @NgModule({
-  declarations: [],
-  imports: [],
-  providers: []
+  imports: [
+    BrowserModule.withServerTransition({ appId: 'pm-app' }),
+    BrowserTransferStateModule,
+    AppModule
+  ],
+  bootstrap: [AppComponent]
 })
 export class AppBrowserModule { }
+
+platformBrowserDynamic().bootstrapModule(AppBrowserModule)
