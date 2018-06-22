@@ -23,7 +23,7 @@ export class NgProdPluginClass implements Plugin {
   }
 
   public dependencies: ['@angular/core']
-  public test = this.regex || /(main.ts|main.aot.ts)/
+  public test = this.regex || /app.browser.module.(ts|js)/
 
   get regex() {
     return (
@@ -34,8 +34,10 @@ export class NgProdPluginClass implements Plugin {
 
   onTypescriptTransform(file: File) {
     if (!this.opts.enabled || !this.test.test(file.relativePath)) return
-    file.contents = `import { enableProdMode } from '@angular/core';
-    enableProdMode()
+    file.contents = `
+    import { enableProdMode } from '@angular/core';
+    enableProdMode();
+    
     ${file.contents}`
   }
 }

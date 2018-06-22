@@ -55,7 +55,7 @@ export class NgPolyfillPluginClass implements Plugin {
   constructor(private opts: NgPolyfillPluginOptions = defaults) {}
   public test: RegExp =
     (this.opts.fileTest && new RegExp(this.opts.fileTest)) ||
-    /(app.browser.module.ts)/
+    /(app.browser.module.(ts|js))/
   public dependencies: ['zone.js', 'core-js']
 
   onTypescriptTransform(file: File) {
