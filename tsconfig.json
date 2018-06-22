@@ -9,8 +9,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "lib": ["es6", "dom"],
-    "typeRoots": ["tools/manual-typings", "node_modules/@types"],
-    "resolveJsonModule": true
+    "typeRoots": ["tools/manual-typings", "node_modules/@types"]
   },
   "include": ["src/**/**.ts", "tools/manual-typings"]
 }

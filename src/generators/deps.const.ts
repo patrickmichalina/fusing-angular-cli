@@ -27,11 +27,13 @@ export const ANGULAR_UNIVERSAL_DEPS = {
 }
 
 export const ANGULAR_UNIVERSAL_DEV_DEPS = {
+  '@types/compression': '^0.0.36',
   '@types/cookie-parser': '^1.4.1',
   '@types/express': '^4.16.0'
 }
 
 export const ANGULAR_UNIVERSAL_EXPRESS_DEPS = {
+  compression: '^1.7.2',
   'cookie-parser': '^1.4.3',
   express: '^4.16.3',
   'express-minify-html': '^0.12.0'

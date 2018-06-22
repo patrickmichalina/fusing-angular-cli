@@ -11,7 +11,6 @@ export interface FaviconConfig {
 }
 
 export interface FuseBoxBaseConfig {
-  readonly homeDir: string
   readonly outputDir: string
 }
 
@@ -21,6 +20,7 @@ export interface FuseBoxServerConfig extends FuseBoxBaseConfig {
 
 export interface FuseBoxBrowserConfig extends FuseBoxBaseConfig {
   readonly browserModule: string
+  readonly aotBrowserModule: string
   readonly prod: {
     readonly uglify: boolean
     readonly treeshake: boolean
