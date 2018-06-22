@@ -1,0 +1,2 @@
+<h1>Your New Angular App</h1>
+<router-outlet></router-outlet>

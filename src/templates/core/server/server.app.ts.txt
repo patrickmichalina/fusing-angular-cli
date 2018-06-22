@@ -5,7 +5,7 @@ import { resolve } from 'path'
 import { ngExpressEngine } from '@nguniversal/express-engine'
 import { AppServerModule } from './server.angular.module'
 import { stat, writeFile } from 'fs'
-import * as config from '../../fusing-angular.json'
+// import * as config from '../../fusing-angular.json'
 
 // const minifyHTML = require('express-minify-html')
 // const xhr2 = require('xhr2')
@@ -13,7 +13,7 @@ import * as config from '../../fusing-angular.json'
 // tslint:disable-next-line:no-object-mutation
 // xhr2.prototype._restrictedHeaders.cookie = false
 
-const base = config.base || ''
+const base = ''
 const expressApp = express()
 const dir = resolve(base, '.dist')
 const publicDir = `${dir}/public`

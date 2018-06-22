@@ -1,12 +1,19 @@
 import { command } from 'yargs'
 import { take, tap } from 'rxjs/operators'
 import { logInfo } from '../utilities/log'
-import { FuseBox, JSONPlugin, QuantumPlugin } from 'fuse-box'
+import {
+  FuseBox,
+  JSONPlugin,
+  QuantumPlugin,
+  RawPlugin,
+  SassPlugin
+} from 'fuse-box'
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
 import { NgPolyfillPlugin } from '../fusebox/ng.polyfill.plugin'
 import { NgCompilerPlugin } from '../fusebox/ng.compiler.plugin'
 import readConfig_ from '../utilities/read-config'
+import { Ng2TemplatePlugin } from 'ng2-fused'
 
 command(
   'serve [port][prod][aot][sw]',
@@ -66,10 +73,22 @@ function serve(isProdBuild = false, isAotBuild = false) {
         target: 'browser@es5',
         useTypescriptCompiler: true,
         plugins: [
+          Ng2TemplatePlugin(),
+          ['*.component.html', RawPlugin()],
           NgProdPlugin({ enabled: isProdBuild }),
           NgCompilerPlugin({ enabled: isAotBuild }),
           NgPolyfillPlugin(),
           // NgOptimizerPlugin({ enabled: opts.enableAngularBuildOptimizer }),
+          [
+            '*.component.css',
+            SassPlugin({
+              indentedSyntax: false,
+              importer: true,
+              sourceMap: false,
+              outputStyle: 'compressed'
+            } as any),
+            RawPlugin()
+          ],
           isProdBuild &&
             QuantumPlugin({
               warnings: false,
@@ -92,6 +111,18 @@ function serve(isProdBuild = false, isAotBuild = false) {
         output: `${serverOutput}/$name.js`,
         plugins: [
           JSONPlugin(),
+          Ng2TemplatePlugin(),
+          ['*.component.html', RawPlugin()],
+          [
+            '*.component.css',
+            SassPlugin({
+              indentedSyntax: false,
+              importer: true,
+              sourceMap: false,
+              outputStyle: 'compressed'
+            } as any),
+            RawPlugin()
+          ],
           NgProdPlugin({
             enabled: true,
             fileTest: 'server.angular.module.ts'
