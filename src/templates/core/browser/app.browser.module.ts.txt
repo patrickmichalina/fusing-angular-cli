@@ -1,6 +1,5 @@
 import { AppModule } from '../app/app.module'
 import { NgModule } from '@angular/core'
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic'
 import { BrowserTransferStateModule, BrowserModule } from '@angular/platform-browser'
 import { AppComponent } from '../app/app.component'
 
@@ -14,4 +13,3 @@ import { AppComponent } from '../app/app.component'
 })
 export class AppBrowserModule { }
 
-platformBrowserDynamic().bootstrapModule(AppBrowserModule)

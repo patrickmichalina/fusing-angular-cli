@@ -24,7 +24,7 @@
     "src"
   ],
   "exclude": [
-    "src/browser/app.browser.jit.entry.ts"
+    "src/browser/app.browser.entry.jit.ts"
   ],
   "angularCompilerOptions": {
     "genDir": ".aot",
