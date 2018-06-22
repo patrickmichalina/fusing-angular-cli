@@ -37,7 +37,6 @@
   "devDependencies": {
     "@angular/animations": "^6.1.0-beta.2",
     "@angular/common": "^6.1.0-beta.2",
-    "@angular/compiler": "^6.1.0-beta.2",
     "@angular/core": "^6.1.0-beta.2",
     "@angular/http": "^6.1.0-beta.2",
     "@angular/platform-browser": "^6.1.0-beta.2",
@@ -69,6 +68,7 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
+    "@angular/compiler": "^6.1.0-beta.2",
     "@angular/compiler-cli": "^6.1.0-beta.2",
     "ajv": "^6.5.1",
     "chalk": "^2.4.1",
