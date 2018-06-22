@@ -15,16 +15,12 @@ command(
     return args
   },
   args => {
-    serve(args.prod, args.aot)
+    serve(args.prod)
   }
 )
   .option('prod', {
     default: false,
     description: 'Run with optimizations enabled'
-  })
-  .option('aot', {
-    default: false,
-    description: 'Pass through AOT Compiler'
   })
   .option('sw', {
     default: false,
@@ -39,7 +35,7 @@ function logServeCommandStart() {
   logInfo('Launching Serve Command')
 }
 
-function serve(isProdBuild = false, isAotBuild = false) {
+function serve(isProdBuild = false) {
   readConfig_()
     .pipe(
       tap(logServeCommandStart),
@@ -47,6 +43,7 @@ function serve(isProdBuild = false, isAotBuild = false) {
     )
     .subscribe(config => {
       const cache = !isProdBuild
+      const isAotBuild = isProdBuild
       const log = config.fusebox.verbose || false
       const homeDir = resolve('.')
       const serverOutput = resolve(config.fusebox.server.outputDir)

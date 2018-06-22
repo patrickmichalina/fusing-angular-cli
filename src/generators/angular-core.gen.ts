@@ -8,7 +8,11 @@ import { writeFile_, mkDirAndContinueIfExists_ } from '../utilities/rx-fs'
 import { forkJoin } from 'rxjs'
 import { resolve } from 'path'
 import { flatMap } from 'rxjs/operators'
-import { browserModuleTemplate } from '../templates/core/browser'
+import {
+  browserModuleTemplate,
+  browserAotEntryTemplate,
+  browserJitEntryTemplate
+} from '../templates/core/browser'
 import {
   serverTemplate,
   serverModuleTemplate,
@@ -62,7 +66,15 @@ export function generateCoreAngularBrowser(projectDir: string) {
     flatMap(() => mkDirAndContinueIfExists_(baseDir)),
     flatMap(() =>
       forkJoin([
-        writeFile_(`${baseDir}/app.browser.module.ts`, browserModuleTemplate)
+        writeFile_(`${baseDir}/app.browser.module.ts`, browserModuleTemplate),
+        writeFile_(
+          `${baseDir}/app.browser.entry.jit.ts`,
+          browserJitEntryTemplate
+        ),
+        writeFile_(
+          `${baseDir}/app.browser.entry.aot.ts`,
+          browserAotEntryTemplate
+        )
       ])
     )
   )
