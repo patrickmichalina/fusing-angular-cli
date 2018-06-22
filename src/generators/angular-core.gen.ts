@@ -3,7 +3,6 @@ import {
   appComponentTemplate,
   appRoutingModuleTemplate,
   appSharedModuleTemplate,
-  homeComponentTemplate,
   appComponentCssTemplate,
   appComponentHtmlTemplate
 } from '../templates/core/app'
@@ -65,10 +64,10 @@ export function generateCoreAngularApp(projectDir: string, universal = true) {
       mkDirAndContinueIfExists_(resolve(baseDir, 'home')).pipe(
         flatMap(() =>
           forkJoin([
-            writeFile_(
-              `${baseDir}/home/home.component.ts`,
-              homeComponentTemplate
-            )
+            // writeFile_(
+            //   `${baseDir}/home/home.component.ts`,
+            //   homeComponentTemplate
+            // )
           ])
         )
       )
