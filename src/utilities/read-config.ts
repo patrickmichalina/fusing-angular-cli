@@ -33,9 +33,15 @@ export interface FuseBoxConfig {
   readonly verbose: boolean
 }
 
+export interface EnvironmentConfig {
+  readonly server: any
+  readonly app: any
+}
+
 export interface FusingAngularConfig {
   readonly favicon: FaviconConfig
   readonly fusebox: FuseBoxConfig
+  readonly environment: EnvironmentConfig
 }
 
 export default function readConfig_() {
