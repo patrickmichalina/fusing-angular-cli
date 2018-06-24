@@ -61,7 +61,7 @@
     "prettier": "^1.13.5",
     "pretty-quick": "^1.6.0",
     "semantic-release": "^15.6.0",
-    "sinon": "^6.0.0",
+    "sinon": "^6.0.1",
     "tslint": "^5.10.0",
     "tslint-immutable": "^4.6.0",
     "validate-commit-msg": "^2.14.0",
@@ -78,7 +78,7 @@
     "ng2-fused": "^0.5.1",
     "npm": "^6.1.0",
     "rxjs": "^6.2.1",
-    "ts-node": "^6.1.2",
+    "ts-node": "^7.0.0",
     "typescript": "2.7.2",
     "uglify-js": "^3.4.1",
     "yargs": "^11.0.0"

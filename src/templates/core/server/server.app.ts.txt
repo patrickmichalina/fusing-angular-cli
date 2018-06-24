@@ -5,8 +5,9 @@ import { resolve } from 'path'
 import { ngExpressEngine } from '@nguniversal/express-engine'
 import { AppServerModule } from './server.angular.module'
 import { stat, writeFile } from 'fs'
-// import * as config from '../../fusing-angular.json'
 
+const environment = JSON.parse(process.env.FUSING_ANGULAR || '{}')
+const isLocalDevelopmentServer = environment.name === 'DEVELOPMENT'
 // const minifyHTML = require('express-minify-html')
 // const xhr2 = require('xhr2')
 
@@ -31,13 +32,19 @@ const publicDir = `${dir}/public`
 //   }
 // }
 
+isLocalDevelopmentServer && require('reload')(expressApp)
+
 expressApp.use(cookieParser())
 expressApp.use(compression())
 
-expressApp.use('/favicon.ico', (req, res) => res.sendStatus(204)) // TODO: FAVICONS
-expressApp.use('/js', express.static(`${publicDir}/js`, { fallthrough: false }))
+expressApp.set('x-powered-by', false)
+expressApp.set('etag', false)
 expressApp.set('view engine', 'html')
+
 expressApp.engine('html', ngExpressEngine({ bootstrap: AppServerModule }))
+
+expressApp.use('/favicon.ico', (req, res) => res.sendStatus(204)) // TODO: FAVICONS
+expressApp.use('/js', express.static(`${publicDir}/js`, { fallthrough: false, etag: false }))
 
 const virtualIndex = (req: express.Request,
   res: express.Response, document: string, path = `${publicDir}/index.html`) => {
@@ -71,6 +78,7 @@ expressApp.get('**', (req, res) => {
     <app-root></app-root>
     <script src="/js/vendor.js"></script>
     <script src="/js/app.js"></script>
+    ${isLocalDevelopmentServer ? '<script src="/reload/reload.js"></script>' : ''}
   </body>
 </html>`
   virtualIndex(req, res, document)

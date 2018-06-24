@@ -6,7 +6,8 @@ import {
   JSONPlugin,
   QuantumPlugin,
   RawPlugin,
-  SassPlugin
+  SassPlugin,
+  EnvPlugin
 } from 'fuse-box'
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
@@ -14,6 +15,7 @@ import { NgPolyfillPlugin } from '../fusebox/ng.polyfill.plugin'
 import { NgCompilerPlugin } from '../fusebox/ng.compiler.plugin'
 import readConfig_ from '../utilities/read-config'
 import { Ng2TemplatePlugin } from 'ng2-fused'
+import { FuseProcess } from 'fuse-box/FuseProcess'
 
 command(
   'serve [port][prod][aot][sw]',
@@ -92,9 +94,6 @@ function serve(isProdBuild = false) {
               uglify: config.fusebox.browser.prod.uglify,
               treeshake: config.fusebox.browser.prod.treeshake,
               bakeApiIntoBundle: 'vendor'
-              // replaceProcessEnv: false,
-              // processPolyfill: true,
-              // ensureES5: true
             })
         ] as any
       })
@@ -107,6 +106,9 @@ function serve(isProdBuild = false) {
         homeDir,
         output: `${serverOutput}/$name.js`,
         plugins: [
+          EnvPlugin({
+            FUSING_ANGULAR: JSON.stringify(config.environment)
+          }),
           JSONPlugin(),
           Ng2TemplatePlugin(),
           ['*.component.html', RawPlugin()],
@@ -131,23 +133,31 @@ function serve(isProdBuild = false) {
         ]
       })
 
+      // tslint:disable-next-line:no-let
+      let prevServerProcess: FuseProcess
+
       fuseBrowser
         .bundle('vendor')
         .watch(watchDir)
         .instructions(` ~ ${browserModule}`)
+        .completed(fn => {
+          fuseServer
+            .bundle('server')
+            .instructions(` > [${config.fusebox.server.serverModule}]`)
+            .completed(proc => {
+              prevServerProcess && prevServerProcess.kill()
+              proc.start()
+              prevServerProcess = proc
+            })
+          fuseServer.run()
+        })
 
       fuseBrowser
         .bundle('app')
         .watch(watchDir)
         .instructions(` !> [${browserModule}]`)
 
-      fuseServer
-        .bundle('server')
-        .watch(watchDir)
-        .instructions(` > [${config.fusebox.server.serverModule}]`)
-        .completed(proc => proc.start())
-
-      fuseServer.run()
+      logInfo('Bundling your application, this may take some time...')
       fuseBrowser.run()
     })
 }
