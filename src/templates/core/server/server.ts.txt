@@ -1,8 +1,9 @@
 import { createServer } from 'http'
 import { expressApp } from './server.app'
 
+const config = JSON.parse(process.env.FUSING_ANGULAR || '{}')
 const server = createServer(expressApp)
 
-server.listen(5000, () => {
-  console.log('Angular Universal Server listening')
+server.listen(config.server.port, () => {
+  console.log(`Angular Universal server listening on port: ${config.server.port}`)
 })
