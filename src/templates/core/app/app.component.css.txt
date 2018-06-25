@@ -1,3 +1,5 @@
-:host {
-  display: block;
+// apply global styles here
+
+app-root {
+
 }

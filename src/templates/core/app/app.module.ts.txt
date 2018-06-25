@@ -12,7 +12,7 @@ import { SharedModule } from './app.shared.module'
     AppRoutingModule,
     TransferHttpCacheModule,
     SharedModule.forRoot(),
-    BrowserModule.withServerTransition({ appId: 'my-app' }),
+    BrowserModule.withServerTransition({ appId: 'app-root' }),
   ]
 })
 export class AppModule { }

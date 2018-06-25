@@ -1,5 +1,5 @@
 import { main as ngc } from '@angular/compiler-cli/src/main'
-import { Plugin, File } from 'fuse-box'
+import { Plugin } from 'fuse-box'
 import { resolve } from 'path'
 
 // tslint:disable:no-class
@@ -15,16 +15,9 @@ export interface NgcPluginOptions {
 
 export class NgcPluginClass implements Plugin {
   constructor(private opts: NgcPluginOptions = defaults) {}
-  public test: RegExp = /-routing.module.js/
+
   bundleStart() {
     this.opts.enabled && ngc(['-p', resolve('tsconfig.aot.json')])
-  }
-
-  transform(file: File) {
-    const regex1 = new RegExp(/.module'/, 'g')
-    const regex2 = new RegExp(/Module\);/, 'g')
-    file.contents = file.contents.replace(regex1, ".module.ngfactory'")
-    file.contents = file.contents.replace(regex2, 'ModuleNgFactory);')
   }
 }
 
