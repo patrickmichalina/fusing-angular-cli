@@ -42,6 +42,12 @@ fng help
 ### Updating Fusing Angular CLI
 
 ```bash
+fng update
+```
+
+or
+
+```bash
 npm i -g fusing-angular-cli@latest
 ```
 
