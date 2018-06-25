@@ -12,10 +12,12 @@ import {
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
 import { NgPolyfillPlugin } from '../fusebox/ng.polyfill.plugin'
-import { NgCompilerPlugin } from '../fusebox/ng.compiler.plugin'
 import readConfig_ from '../utilities/read-config'
 import { Ng2TemplatePlugin } from 'ng2-fused'
 import { FuseProcess } from 'fuse-box/FuseProcess'
+import { NgAotFactoryPlugin } from '../fusebox/ng.aot-factory.plugin'
+import clearTerminal from '../utilities/clear'
+import { main as ngc } from '@angular/compiler-cli/src/main'
 
 command(
   'serve [port][prod][aot][sw]',
@@ -63,6 +65,8 @@ function serve(isProdBuild = false) {
         ? config.fusebox.browser.aotBrowserModule
         : config.fusebox.browser.browserModule
 
+      isAotBuild && ngc(['-p', resolve('tsconfig.aot.json')])
+
       const fuseBrowser = FuseBox.init({
         log,
         modulesFolder,
@@ -72,12 +76,11 @@ function serve(isProdBuild = false) {
         target: 'browser@es5',
         useTypescriptCompiler: true,
         plugins: [
+          isAotBuild && NgAotFactoryPlugin(),
           Ng2TemplatePlugin(),
           ['*.component.html', RawPlugin()],
           NgProdPlugin({ enabled: isProdBuild }),
-          NgCompilerPlugin({ enabled: isAotBuild }),
           NgPolyfillPlugin(),
-          // NgOptimizerPlugin({ enabled: opts.enableAngularBuildOptimizer }),
           [
             '*.component.css',
             SassPlugin({
@@ -146,6 +149,7 @@ function serve(isProdBuild = false) {
             .instructions(` > [${config.fusebox.server.serverModule}]`)
             .completed(proc => {
               prevServerProcess && prevServerProcess.kill()
+              clearTerminal()
               proc.start()
               prevServerProcess = proc
             })
@@ -156,6 +160,7 @@ function serve(isProdBuild = false) {
         .bundle('app')
         .watch(watchDir)
         .instructions(` !> [${browserModule}]`)
+        .splitConfig({ dest: '../js/modules' })
 
       logInfo('Bundling your application, this may take some time...')
       fuseBrowser.run()

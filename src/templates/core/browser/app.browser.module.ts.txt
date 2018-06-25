@@ -5,7 +5,7 @@ import { AppComponent } from '../app/app.component'
 
 @NgModule({
   imports: [
-    BrowserModule.withServerTransition({ appId: 'pm-app' }),
+    BrowserModule.withServerTransition({ appId: 'app-root' }),
     BrowserTransferStateModule,
     AppModule
   ],
