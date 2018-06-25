@@ -12,7 +12,14 @@ export default function generateFngConfig(path: string, overwrite = false) {
     {
       // version: pkg.version,
       favicon,
-      fusebox
+      fusebox,
+      environment: {
+        name: 'DEVELOPMENT',
+        server: {
+          port: 5000
+        },
+        app: {}
+      }
     },
     overwrite
   )
