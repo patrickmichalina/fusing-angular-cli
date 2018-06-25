@@ -14,7 +14,7 @@ export function logErrorWithPrefix(msg: any) {
   log(chalk.bgRedBright(`Error: ${msg}`))
 }
 
-export function logInfo(msg: any) {
+export function logInfo(msg: string) {
   log(chalk.blue(msg))
 }
 
