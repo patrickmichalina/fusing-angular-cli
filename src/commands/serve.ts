@@ -18,6 +18,7 @@ import { FuseProcess } from 'fuse-box/FuseProcess'
 import { NgAotFactoryPlugin } from '../fusebox/ng.aot-factory.plugin'
 import clearTerminal from '../utilities/clear'
 import { main as ngc } from '@angular/compiler-cli/src/main'
+import { CompressionPlugin } from '../fusebox/compression.plugin'
 
 command(
   'serve [port][prod][aot][sw]',
@@ -97,7 +98,8 @@ function serve(isProdBuild = false) {
               uglify: config.fusebox.browser.prod.uglify,
               treeshake: config.fusebox.browser.prod.treeshake,
               bakeApiIntoBundle: 'vendor'
-            })
+            }),
+          CompressionPlugin()
         ] as any
       })
 

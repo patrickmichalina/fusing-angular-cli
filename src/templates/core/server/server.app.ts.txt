@@ -1,14 +1,13 @@
 import * as express from 'express'
 import * as cookieParser from 'cookie-parser'
-import * as compression from 'compression'
 import { resolve } from 'path'
 import { ngExpressEngine } from '@nguniversal/express-engine'
 import { AppServerModule } from './server.angular.module'
-import { stat, writeFile } from 'fs'
+import { stat, writeFile, createReadStream } from 'fs'
 
 const environment = JSON.parse(process.env.FUSING_ANGULAR || '{}')
 const isLocalDevelopmentServer = environment.name === 'DEVELOPMENT'
-// const minifyHTML = require('express-minify-html')
+
 // const xhr2 = require('xhr2')
 
 // tslint:disable-next-line:no-object-mutation
@@ -19,23 +18,9 @@ const expressApp = express()
 const dir = resolve(base, '.dist')
 const publicDir = `${dir}/public`
 
-// const staticOptions = {
-//   index: false,
-//   maxAge: isProd ? ms('1y') : ms('0'),
-//   setHeaders: (res: express.Response, path: any) => {
-//     res.setHeader(
-//       'Expires',
-//       isProd
-//         ? new Date(Date.now() + ms('1y')).toUTCString()
-//         : new Date(Date.now() + ms('0')).toUTCString()
-//     )
-//   }
-// }
-
 isLocalDevelopmentServer && require('reload')(expressApp)
 
 expressApp.use(cookieParser())
-expressApp.use(compression())
 
 expressApp.set('x-powered-by', false)
 expressApp.set('etag', false)
@@ -44,7 +29,52 @@ expressApp.set('view engine', 'html')
 expressApp.engine('html', ngExpressEngine({ bootstrap: AppServerModule }))
 
 expressApp.use('/favicon.ico', (req, res) => res.sendStatus(204)) // TODO: FAVICONS
-expressApp.use('/js', express.static(`${publicDir}/js`, { fallthrough: false, etag: false }))
+
+function returnBrEncoding(availableEncodings: string[]) {
+  return availableEncodings.some(a => a === 'br')
+}
+
+function returnGzipEncoding(availableEncodings: string[]) {
+  return availableEncodings.some(a => a === 'gzip')
+}
+
+function writeJsHeaders(res: express.Response, contentLength: number, type: string) {
+  res.writeHead(200, {
+    "Content-Type": "application/javascript",
+    "Content-Encoding": type,
+    "Content-Length": contentLength
+  });
+}
+
+function checkReturnJsFile(filePath: string, res: express.Response, encoding: string, append = true) {
+  const path = append
+    ? `${filePath}.${encoding}`
+    : filePath
+  stat(path, (err, stats) => {
+    if (err) {
+      res.writeHead(404)
+      res.end()
+    } else {
+      writeJsHeaders(res, stats.size, encoding)
+      createReadStream(path).pipe(res)
+    }
+  })
+}
+
+expressApp.get('/js**', (req, res) => {
+  const encodings = (req.get('Accept-Encoding') || '').split(',').map(a => a.trim())
+  const filePath = resolve(`${publicDir}${req.path}`)
+
+  if (isLocalDevelopmentServer) {
+    checkReturnJsFile(filePath, res, 'identity', false)
+  } else if (returnBrEncoding(encodings)) {
+    checkReturnJsFile(filePath, res, 'br')
+  } else if (returnGzipEncoding(encodings)) {
+    checkReturnJsFile(filePath, res, 'gzip')
+  } else {
+    checkReturnJsFile(filePath, res, 'identity', false)
+  }
+})
 
 const virtualIndex = (req: express.Request,
   res: express.Response, document: string, path = `${publicDir}/index.html`) => {
@@ -98,9 +128,6 @@ expressApp.get('**', (req, res) => {
 //   express.static(`${dir}/assets`, { ...staticOptions, fallthrough: false })
 // )
 
-
-
-///////////////////////////////////
 // app.use('/robots.txt', express.static(`${dir}/web/robots.txt`, staticOptions))
 // app.use('/ping.html', express.static(`${dir}/web/ping.html`, staticOptions))
 // app.use(
