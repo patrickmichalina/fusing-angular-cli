@@ -1,3 +1,5 @@
 export const FAVICON_DEFAULTS = {
-  name: ''
+  source: 'src/misc/logo.svg',
+  output: 'src/assets/favicons',
+  config: {}
 }

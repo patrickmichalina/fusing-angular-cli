@@ -1,5 +1,6 @@
 import { bindCallback, Observable } from 'rxjs'
 import { FaviconConfig } from './read-config'
+import { resolve } from 'path'
 import * as favs from 'favicons'
 
 function callback(config: FaviconConfig) {
@@ -14,7 +15,7 @@ function callback(config: FaviconConfig) {
 
 export function rxFavicons(config?: FaviconConfig) {
   const _config = {
-    source: 'assets/logo.svg',
+    source: resolve('src/misc/logo.svg'),
     configuration: {},
     ...config
   } as FaviconConfig
