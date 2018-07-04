@@ -6,7 +6,7 @@ import { AppServerModule } from './server.angular.module'
 import { stat, createReadStream } from 'fs'
 
 const environment = JSON.parse(process.env.FUSING_ANGULAR || '{}')
-const isLocalDevelopmentServer = environment.name === 'DEVELOPMENT'
+const isLocalDevelopmentServer = environment.ENV === 'dev'
 
 // const xhr2 = require('xhr2')
 

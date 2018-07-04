@@ -36,6 +36,7 @@ import {
 import { load, commands } from 'npm'
 import generateTsConfig from '../generators/tsconfig.gen'
 import generateTsDeclartionFile from '../generators/declarations.gen'
+import generateDotEnv from '../generators/env.gen'
 
 command(
   'create [overwrite]',
@@ -309,6 +310,7 @@ function create(overwriteExisting = false) {
           generateCoreAngular(im.config.fullname),
           generateGitIgnore(path, overwriteExisting),
           generateTsLint(path, overwriteExisting),
+          generateDotEnv(path, overwriteExisting),
           generateFngConfig(path, overwriteExisting),
           generateTsConfig(path, overwriteExisting),
           generateTsDeclartionFile(path, overwriteExisting)

@@ -13,13 +13,14 @@ import {
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
 import { NgPolyfillPlugin } from '../fusebox/ng.polyfill.plugin'
-import readConfig_ from '../utilities/read-config'
 import { Ng2TemplatePlugin } from 'ng2-fused'
 import { FuseProcess } from 'fuse-box/FuseProcess'
 import { NgAotFactoryPlugin } from '../fusebox/ng.aot-factory.plugin'
-import clearTerminal from '../utilities/clear'
 import { main as ngc } from '@angular/compiler-cli/src/main'
 import { CompressionPlugin } from '../fusebox/compression.plugin'
+import { appEnvironmentVariables } from '../utilities/environment-variables'
+import clearTerminal from '../utilities/clear'
+import readConfig_ from '../utilities/read-config'
 
 command(
   'serve [port][prod][aot][sw]',
@@ -105,7 +106,6 @@ function serve(isProdBuild = false) {
             } as any),
             RawPlugin()
           ],
-
           isProdBuild &&
             QuantumPlugin({
               warnings: false,
@@ -126,7 +126,7 @@ function serve(isProdBuild = false) {
         output: `${serverOutput}/$name.js`,
         plugins: [
           EnvPlugin({
-            FUSING_ANGULAR: JSON.stringify(config.environment)
+            FUSING_ANGULAR: JSON.stringify(appEnvironmentVariables)
           }),
           JSONPlugin(),
           Ng2TemplatePlugin(),
