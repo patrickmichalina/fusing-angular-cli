@@ -7,7 +7,8 @@ import {
   QuantumPlugin,
   RawPlugin,
   SassPlugin,
-  EnvPlugin
+  EnvPlugin,
+  WebIndexPlugin
 } from 'fuse-box'
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
@@ -80,6 +81,18 @@ function serve(isProdBuild = false) {
           isAotBuild && NgAotFactoryPlugin(),
           Ng2TemplatePlugin(),
           ['*.component.html', RawPlugin()],
+          WebIndexPlugin({
+            title: 'test',
+            bundles: ['app', 'vendor'],
+            path: 'js',
+            target: '../index.html',
+            template: resolve('src/app/index.pug'),
+            engine: 'pug',
+            locals: {
+              pageTitle: 'FUSING ANGULAR',
+              isLocalDev: !isProdBuild
+            }
+          }),
           NgProdPlugin({ enabled: isProdBuild }),
           NgPolyfillPlugin(),
           [
@@ -92,6 +105,7 @@ function serve(isProdBuild = false) {
             } as any),
             RawPlugin()
           ],
+
           isProdBuild &&
             QuantumPlugin({
               warnings: false,

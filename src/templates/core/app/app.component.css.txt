@@ -1,4 +1,4 @@
-// apply global styles here
+/* apply global styles here */
 
 app-root {
 

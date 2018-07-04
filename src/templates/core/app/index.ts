@@ -5,6 +5,7 @@ import * as appRoutingModuleTemplate from './app.routing.module.ts.txt'
 import * as appComponentCssTemplate from './app.component.css.txt'
 import * as appComponentHtmlTemplate from './app.component.html.txt'
 import * as homeComponentTemplate from './home.component.ts.txt'
+import * as appIndex from './index.pug.txt'
 
 export {
   appModuleTemplate,
@@ -13,5 +14,6 @@ export {
   appRoutingModuleTemplate,
   homeComponentTemplate,
   appComponentCssTemplate,
-  appComponentHtmlTemplate
+  appComponentHtmlTemplate,
+  appIndex
 }
