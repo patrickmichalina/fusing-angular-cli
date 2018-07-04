@@ -4,7 +4,8 @@ import {
   appRoutingModuleTemplate,
   appSharedModuleTemplate,
   appComponentCssTemplate,
-  appComponentHtmlTemplate
+  appComponentHtmlTemplate,
+  appIndex
 } from '../templates/core/app'
 import { writeFile_, mkDirAndContinueIfExists_ } from '../utilities/rx-fs'
 import { forkJoin } from 'rxjs'
@@ -57,7 +58,8 @@ export function generateCoreAngularApp(projectDir: string, universal = true) {
         ),
         writeFile_(`${baseDir}/app.component.ts`, appComponentTemplate),
         writeFile_(`${baseDir}/app.component.css`, appComponentCssTemplate), // TODO: write component generator function instead
-        writeFile_(`${baseDir}/app.component.html`, appComponentHtmlTemplate)
+        writeFile_(`${baseDir}/app.component.html`, appComponentHtmlTemplate),
+        writeFile_(`${baseDir}/index.pug`, appIndex)
       ])
     ),
     flatMap(() =>
