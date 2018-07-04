@@ -37,6 +37,7 @@ import { load, commands } from 'npm'
 import generateTsConfig from '../generators/tsconfig.gen'
 import generateTsDeclartionFile from '../generators/declarations.gen'
 import generateDotEnv from '../generators/env.gen'
+import generateIdeStubs from '../generators/ide.gen'
 
 command(
   'create [overwrite]',
@@ -51,6 +52,11 @@ command(
   description: 'Overwrite existing application folder'
 })
 
+export enum IDE {
+  VISUAL_STUDIO_CODE = 'Visual Studio Code',
+  OTHER = 'Other'
+}
+
 interface QustionResponse {
   readonly name: string
   readonly answer: string | boolean
@@ -59,6 +65,7 @@ interface QustionResponse {
 interface AnswersDictionary {
   readonly fullname: string
   readonly isUniversalApp: boolean
+  readonly ide: IDE
 }
 
 interface WorkingAnswersDictionary {
@@ -105,15 +112,17 @@ const Q_SHORT_NAME = {
     current: WorkingAnswersDictionary,
     stream: Subject<any>
   ) => {
-    stream.next(Q_APP_TYPE.question)
+    stream.next(Q_IDE.question)
   }
 }
 
-const Q_APP_TYPE = {
+const Q_IDE = {
   question: {
-    type: 'confirm',
-    name: 'isUniversalApp',
-    message: 'Server rendered (Angular Universal)?'
+    type: 'list',
+    name: 'ide',
+    message: 'Which IDE are you using?',
+    default: 'Visual Studio Code',
+    choices: ['Visual Studio Code', 'Other']
   },
   answerHandler: (
     response: QustionResponse,
@@ -123,6 +132,21 @@ const Q_APP_TYPE = {
     stream.complete()
   }
 }
+
+// const Q_APP_TYPE = {
+//   question: {
+//     type: 'confirm',
+//     name: 'isUniversalApp',
+//     message: 'Server rendered (Angular Universal)?'
+//   },
+//   answerHandler: (
+//     response: QustionResponse,
+//     current: WorkingAnswersDictionary,
+//     stream: Subject<any>
+//   ) => {
+//     stream.complete()
+//   }
+// }
 
 const Q_TEST_RUNNERS = {
   question: {
@@ -144,7 +168,8 @@ const QUESTION_DICT = [
   Q_FULL_NAME,
   Q_SHORT_NAME,
   Q_TEST_RUNNERS,
-  Q_APP_TYPE
+  Q_IDE
+  // Q_APP_TYPE
 ].reduce(
   (acc, curr) => {
     return { ...acc, [curr.question.name]: curr }
@@ -313,7 +338,8 @@ function create(overwriteExisting = false) {
           generateDotEnv(path, overwriteExisting),
           generateFngConfig(path, overwriteExisting),
           generateTsConfig(path, overwriteExisting),
-          generateTsDeclartionFile(path, overwriteExisting)
+          generateTsDeclartionFile(path, overwriteExisting),
+          generateIdeStubs(im.config.ide, path, overwriteExisting)
         ])
       }, im => im),
       take(1)
