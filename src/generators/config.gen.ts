@@ -10,14 +10,7 @@ export default function generateFngConfig(path: string, overwrite = false) {
     resolve(path, configPath),
     {
       favicon,
-      fusebox,
-      environment: {
-        name: 'DEVELOPMENT',
-        server: {
-          port: 5000
-        },
-        app: {}
-      }
+      fusebox
     },
     overwrite
   )
