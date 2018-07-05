@@ -1,10 +1,11 @@
 import './create'
 import './build'
 import './serve'
+import './test'
+import './lint'
 import './favicon'
 import './config'
 import './update'
-import './lint'
 import { argv } from 'yargs'
 
 argv
