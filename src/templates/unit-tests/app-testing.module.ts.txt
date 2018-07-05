@@ -1,0 +1,12 @@
+import { NgModule } from '@angular/core'
+import { SharedModule } from '../client/app/shared/shared.module'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+
+@NgModule({
+  imports: [
+    SharedModule,
+    BrowserAnimationsModule
+  ],
+  providers: []
+})
+export class AppTestingModule { }
