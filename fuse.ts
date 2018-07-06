@@ -1,4 +1,5 @@
-import { FuseBox, QuantumPlugin, JSONPlugin, RawPlugin, Sparky } from 'fuse-box'
+import { FuseBox, QuantumPlugin, JSONPlugin, RawPlugin } from 'fuse-box'
+import { src, task } from 'fuse-box/sparky'
 import { resolve } from 'path'
 import { argv } from 'yargs'
 import shabang from './tools/scripts/fuse-shebang'
@@ -37,11 +38,15 @@ const fuseConfig = FuseBox.init({
 
 const bundle = fuseConfig.bundle(appName)
 
-Sparky.task('test', () => {
+task('test', () => {
   bundle.test('[spec/**/**.ts]', {})
 })
 
-Sparky.task('bundle', () => {
+task('cp.jest', () => {
+  return src('jest/**', { base: 'src/templates/unit-tests' }).dest('.build/')
+})
+
+task('bundle', ['cp.jest'], () => {
   bundle.instructions('> [src/index.ts]')
   !isProdBuild &&
     bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))

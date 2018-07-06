@@ -13,21 +13,33 @@ command(
     test()
   }
 )
-console.log(resolve('preprocessor.js'))
+
 function test() {
   logInfo('Testing....')
 
   jest.runCLI(
     {
       transform: JSON.stringify({
-        '^.+\\.(ts|js|html)$': resolve('testing/preprocessor.js')
+        '^.+\\.(ts|js|html)$': resolve(
+          'node_modules/fusing-angular-cli/.build/jest/preprocessor.js'
+        )
       }),
       testMatch: [
         '**/__tests__/**/*.+(ts|js)?(x)',
         '**/+(*.)+(spec|test).+(ts|js)?(x)'
       ],
       moduleFileExtensions: ['ts', 'js', 'html', 'json'],
-      setupTestFrameworkScriptFile: '<rootDir>/testing/jest.setup.js'
+      setupTestFrameworkScriptFile: resolve(
+        'node_modules/fusing-angular-cli/.build/jest/jest.setup.js'
+      ),
+      snapshotSerializers: [
+        resolve(
+          'node_modules/fusing-angular-cli/.build/jest/AngularSnapshotSerializer.js'
+        ),
+        resolve(
+          'node_modules/fusing-angular-cli/.build/jest/HTMLCommentSerializer.js'
+        )
+      ]
     },
     [resolve(__dirname, '../../')]
   )
