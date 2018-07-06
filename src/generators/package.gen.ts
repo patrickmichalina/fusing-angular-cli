@@ -1,6 +1,5 @@
 import { writeJsonFile_ } from '../utilities/rx-fs'
 import { resolve } from 'path'
-import { ANGULAR_CORE_DEPS } from './deps.const'
 
 interface StringDictionary {
   readonly [key: string]: string
@@ -35,22 +34,13 @@ export default function generatePackageFile(
   dirPath = '',
   filename = 'package.json'
 ) {
-  const deps: StringDictionary = {
-    ...ANGULAR_CORE_DEPS
-  }
-
-  const devDeps: StringDictionary = {}
-
   const config: npmPackageConfig = {
     version: '0.0.0',
     license: 'UNLICENSED',
     description: 'Angular app scaffolded by Fusing-Angular-CLI',
     ..._config,
     dependencies: {
-      ...sortStringDict({ ...(_config.dependencies || {}), ...deps })
-    },
-    devDependencies: {
-      ...sortStringDict({ ...(_config.devDependencies || {}), ...devDeps })
+      'fusing-angular-cli': '^0.2.x'
     }
   }
   return writeJsonFile_(
