@@ -10,6 +10,7 @@ import {
   EnvPlugin,
   WebIndexPlugin
 } from 'fuse-box'
+import { exec, task, watch } from 'fuse-box/sparky'
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
 import { NgPolyfillPlugin } from '../fusebox/ng.polyfill.plugin'
@@ -19,6 +20,8 @@ import { NgAotFactoryPlugin } from '../fusebox/ng.aot-factory.plugin'
 import { main as ngc } from '@angular/compiler-cli/src/main'
 import { CompressionPlugin } from '../fusebox/compression.plugin'
 import { appEnvironmentVariables } from '../utilities/environment-variables'
+import { renderSingleSass } from '../utilities/sass'
+import { SparkyFile } from 'fuse-box/sparky/SparkyFile'
 import clearTerminal from '../utilities/clear'
 import readConfig_ from '../utilities/read-config'
 
@@ -178,7 +181,16 @@ function serve(isProdBuild = false) {
         .instructions(` !> [${browserModule}]`)
         .splitConfig({ dest: '../js/modules' })
 
+      task('test', () =>
+        watch('src/**/**.*').file('*.scss', (f: SparkyFile) => {
+          f.homePath && renderSingleSass(f.homePath)
+        })
+      )
+
+      exec('test')
+
       logInfo('Bundling your application, this may take some time...')
-      fuseBrowser.run()
+
+      fuseBrowser.run({ chokidar: { ignored: /.scss/g } })
     })
 }

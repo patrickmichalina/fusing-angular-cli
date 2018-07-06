@@ -1,5 +1,11 @@
 {
-    "editor.tabSize": 2,
-    "npm.enableScriptExplorer": true,
-    "typescript.tsdk": "node_modules/typescript/lib"
+  "editor.tabSize": 2,
+  "npm.enableScriptExplorer": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.exclude": {
+    "**/*.js.map": true,
+    "**/*.css": {
+      "when": "$(basename).scss"
+    }
+  }
 }

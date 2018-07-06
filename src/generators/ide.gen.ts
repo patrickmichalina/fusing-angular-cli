@@ -8,8 +8,10 @@ import {
 } from '../utilities/rx-fs'
 import { flatMap } from 'rxjs/operators'
 import * as vsCodeSettings from '../templates/vscode/settings.json.txt'
+import * as vsCodeLaunch from '../templates/vscode/launch.json.txt'
 
 const configPath = '.vscode/settings.json'
+const launchPath = '.vscode/launch.json'
 const dirRoot = '.vscode'
 
 function handleOther() {
@@ -19,12 +21,14 @@ function handleOther() {
 function handleVSCode(dir: string, overwrite = false) {
   return overwrite
     ? mkDirAndContinueIfExists_(resolve(dir, dirRoot)).pipe(
-        flatMap(() => writeFile_(resolve(dir, configPath), vsCodeSettings))
+        flatMap(() => writeFile_(resolve(dir, configPath), vsCodeSettings)),
+        flatMap(() => writeFile_(resolve(dir, launchPath), vsCodeLaunch))
       )
     : mkDirAndContinueIfExists_(resolve(dir, dirRoot)).pipe(
         flatMap(() =>
           writeFileSafely_(resolve(dir, configPath), vsCodeSettings)
-        )
+        ),
+        flatMap(() => writeFileSafely_(resolve(dir, launchPath), vsCodeLaunch))
       )
 }
 

@@ -1,0 +1,23 @@
+{
+  "globals": {
+    "__TRANSFORM_HTML__": true,
+    "ts-jest": {
+      "tsConfigFile": "tsconfig.json"
+    }
+  },
+  "transform": {
+    "^.+\\.(ts|js|html)$":
+      "<rootDir>/node_modules/fusing-angular-cli/.build/jest/preprocessor.js"
+  },
+  "testMatch": [
+    "**/__tests__/**/*.+(ts|js)?(x)",
+    "**/+(*.)+(spec|test).+(ts|js)?(x)"
+  ],
+  "moduleFileExtensions": ["ts", "js", "html", "json"],
+  "setupTestFrameworkScriptFile":
+    "<rootDir>/node_modules/fusing-angular-cli/.build/jest/jest.setup.js",
+  "snapshotSerializers": [
+    "<rootDir>/node_modules/fusing-angular-cli/.build/jest/AngularSnapshotSerializer.js",
+    "<rootDir>/node_modules/fusing-angular-cli/.build/jest/HTMLCommentSerializer.js"
+  ]
+}

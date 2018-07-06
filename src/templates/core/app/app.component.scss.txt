@@ -1,5 +1,5 @@
 /* apply global styles here */
 
-app-root {
+html {
 
 }

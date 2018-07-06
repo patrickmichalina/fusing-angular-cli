@@ -57,7 +57,7 @@ export function generateCoreAngularApp(projectDir: string, universal = true) {
           appRoutingModuleTemplate
         ),
         writeFile_(`${baseDir}/app.component.ts`, appComponentTemplate),
-        writeFile_(`${baseDir}/app.component.css`, appComponentCssTemplate), // TODO: write component generator function instead
+        writeFile_(`${baseDir}/app.component.scss`, appComponentCssTemplate), // TODO: write component generator function instead
         writeFile_(`${baseDir}/app.component.html`, appComponentHtmlTemplate),
         writeFile_(`${baseDir}/index.pug`, appIndex)
       ])
