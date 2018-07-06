@@ -20,7 +20,7 @@ import { NgAotFactoryPlugin } from '../fusebox/ng.aot-factory.plugin'
 import { main as ngc } from '@angular/compiler-cli/src/main'
 import { CompressionPlugin } from '../fusebox/compression.plugin'
 import { appEnvironmentVariables } from '../utilities/environment-variables'
-import { renderSingleSass } from '../utilities/sass'
+import { renderSingleSass, renderSassDir } from '../utilities/sass'
 import { SparkyFile } from 'fuse-box/sparky/SparkyFile'
 import clearTerminal from '../utilities/clear'
 import readConfig_ from '../utilities/read-config'
@@ -181,16 +181,17 @@ function serve(isProdBuild = false) {
         .instructions(` !> [${browserModule}]`)
         .splitConfig({ dest: '../js/modules' })
 
-      task('test', () =>
+      task('scss.watch', () =>
         watch('src/**/**.*').file('*.scss', (f: SparkyFile) => {
           f.homePath && renderSingleSass(f.homePath)
         })
       )
 
-      exec('test')
+      exec('scss.watch')
 
       logInfo('Bundling your application, this may take some time...')
 
+      renderSassDir()
       fuseBrowser.run({ chokidar: { ignored: /.scss/g } })
     })
 }
