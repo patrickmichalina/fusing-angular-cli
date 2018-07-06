@@ -3,19 +3,31 @@ import { resolve } from 'path'
 const jest = require('jest')
 
 command(
-  'test',
+  'test [--watch] [--watchAll]',
   'run unit-tests on your project',
   args => {
     return args
   },
   args => {
-    test()
+    const watch = args.watch || false
+    const watchAll = args.watchAll || false
+    test(watch, watchAll)
   }
 )
+  .option('watch', {
+    default: false,
+    description: 're-run tests when files change'
+  })
+  .option('watchAll', {
+    default: false,
+    description: 're-run tests when files change regardless of git diff'
+  })
 
-function test() {
+function test(watch: boolean, watchAll: boolean) {
   jest.runCLI(
     {
+      watch,
+      watchAll,
       globals: JSON.stringify({
         __TRANSFORM_HTML__: true,
         'ts-jest': {
