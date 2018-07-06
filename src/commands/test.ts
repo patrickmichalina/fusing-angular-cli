@@ -1,5 +1,4 @@
 import { command } from 'yargs'
-import { logInfo } from '../utilities/log'
 import { resolve } from 'path'
 const jest = require('jest')
 
@@ -15,10 +14,14 @@ command(
 )
 
 function test() {
-  logInfo('Testing....')
-
   jest.runCLI(
     {
+      globals: JSON.stringify({
+        __TRANSFORM_HTML__: true,
+        'ts-jest': {
+          tsConfigFile: resolve('tsconfig.json')
+        }
+      }),
       transform: JSON.stringify({
         '^.+\\.(ts|js|html)$': resolve(
           'node_modules/fusing-angular-cli/.build/jest/preprocessor.js'
