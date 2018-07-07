@@ -85,6 +85,7 @@
     "iltorb": "^2.3.2",
     "inquirer": "^6.0.0",
     "jest": "^23.3.0",
+    "jest-junit-reporter": "^1.1.0",
     "jest-preset-angular": "^5.2.3",
     "jest-zone-patch": "0.0.8",
     "ng2-fused": "^0.5.1",

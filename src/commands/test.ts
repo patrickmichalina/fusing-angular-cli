@@ -3,31 +3,31 @@ import { resolve } from 'path'
 const jest = require('jest')
 
 command(
-  'test [--watch] [--watchAll]',
+  'test [--watch] [--coverage]',
   'run unit-tests on your project',
   args => {
     return args
   },
   args => {
     const watch = args.watch || false
-    const watchAll = args.watchAll || false
-    test(watch, watchAll)
+    const coverage = args.coverage || false
+    test(watch, coverage)
   }
 )
+  .option('coverage', {
+    default: false,
+    description: 'report on code coverage'
+  })
   .option('watch', {
     default: false,
     description: 're-run tests when files change'
   })
-  .option('watchAll', {
-    default: false,
-    description: 're-run tests when files change regardless of git diff'
-  })
 
-function test(watch: boolean, watchAll: boolean) {
+function test(watchAll: boolean, coverage: boolean) {
   jest.runCLI(
     {
-      watch,
       watchAll,
+      coverage,
       globals: JSON.stringify({
         __TRANSFORM_HTML__: true,
         'ts-jest': {
@@ -54,6 +54,12 @@ function test(watch: boolean, watchAll: boolean) {
         resolve(
           'node_modules/fusing-angular-cli/.build/jest/HTMLCommentSerializer.js'
         )
+      ],
+      testResultsProcessor: resolve('node_modules/jest-junit-reporter'),
+      collectCoverageFrom: [
+        'src/**/*.{ts,html}',
+        '!src/browser/app.browser.entry.aot.ts',
+        '!src/browser/app.browser.entry.jit.ts'
       ]
     },
     [resolve(__dirname, '../../')]
