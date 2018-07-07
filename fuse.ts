@@ -46,7 +46,7 @@ task('cp.jest', () => {
   return src('jest/**', { base: 'src/templates/unit-tests' }).dest('.build/')
 })
 
-task('bundle', ['cp.jest'], () => {
+task('bundle', ['cp.jest', 'ng.svg'], () => {
   bundle.instructions('> [src/index.ts]')
   !isProdBuild &&
     bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))
@@ -55,4 +55,23 @@ task('bundle', ['cp.jest'], () => {
     const bundle = bp.bundles.get(appName)
     bundle && shabang(bundle, absOutputPath)
   })
+})
+
+task('ng.svg', () => {
+  const config = FuseBox.init({
+    homeDir,
+    output: `${outputDir}/modules/svg/$name.js`,
+    globals: {
+      default: '*'
+    },
+    package: {
+      name: 'default',
+      main: outputPath
+    }
+  })
+  src('**', { base: 'src/modules/svg' })
+    .dest('.build/modules/svg')
+    .exec()
+  config.bundle('index').instructions('> [src/modules/svg/index.ts]')
+  config.run()
 })
