@@ -78,6 +78,7 @@ task('ng.svg', () => {
     .file('*', (file: SparkyFile) => file.rename('index.d.ts'))
     .dest('.build/modules/svg/$name')
     .exec()
+
   config.bundle('index').instructions('! [src/modules/svg/test.ts]')
   config.run()
 })
