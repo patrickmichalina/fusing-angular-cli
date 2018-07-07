@@ -3,6 +3,7 @@ import { src, task } from 'fuse-box/sparky'
 import { resolve } from 'path'
 import { argv } from 'yargs'
 import shabang from './tools/scripts/fuse-shebang'
+import { SparkyFile } from 'fuse-box/sparky/SparkyFile'
 
 const appName = 'fng'
 const outputDir = '.build'
@@ -60,6 +61,7 @@ task('bundle', ['cp.jest', 'ng.svg'], () => {
 task('ng.svg', () => {
   const config = FuseBox.init({
     homeDir,
+    target: 'universal@es5',
     output: `${outputDir}/modules/svg/$name.js`,
     globals: {
       default: '*'
@@ -69,9 +71,13 @@ task('ng.svg', () => {
       main: outputPath
     }
   })
-  src('**', { base: 'src/modules/svg' })
+  src('test.ts', { base: 'src/modules/svg' })
     .dest('.build/modules/svg')
     .exec()
-  config.bundle('index').instructions('> [src/modules/svg/index.ts]')
+  src('src/modules/svg/index.ts')
+    .file('*', (file: SparkyFile) => file.rename('index.d.ts'))
+    .dest('.build/modules/svg/$name')
+    .exec()
+  config.bundle('index').instructions('! [src/modules/svg/test.ts]')
   config.run()
 })
