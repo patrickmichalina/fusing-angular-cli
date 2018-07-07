@@ -44,7 +44,7 @@ function writeJsHeaders(res: express.Response, contentLength: number, type: stri
     "Content-Type": "application/javascript",
     "Content-Encoding": type,
     "Content-Length": contentLength
-  });
+  })
 }
 
 function checkReturnJsFile(filePath: string, res: express.Response, encoding: string, append = true) {
