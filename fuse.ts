@@ -4,7 +4,8 @@ import { resolve } from 'path'
 import { argv } from 'yargs'
 import shabang from './tools/scripts/fuse-shebang'
 import { SparkyFile } from 'fuse-box/sparky/SparkyFile'
-import { unlinkSync } from 'fs'
+import { spawn } from 'child_process'
+// import { unlinkSync } from 'fs'
 
 const appName = 'fng'
 const outputDir = '.build'
@@ -48,7 +49,7 @@ task('cp.jest', () => {
   return src('jest/**', { base: 'src/templates/unit-tests' }).dest('.build/')
 })
 
-task('bundle', ['cp.jest', 'ng.util', 'ng.svg'], () => {
+task('bundle', ['cp.jest', 'ng.modules'], () => {
   bundle.instructions('> [src/index.ts]')
   !isProdBuild &&
     bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))
@@ -59,61 +60,12 @@ task('bundle', ['cp.jest', 'ng.util', 'ng.svg'], () => {
   })
 })
 
-task('ng.svg', () => {
-  const config = FuseBox.init({
-    homeDir,
-    target: 'universal@es5',
-    output: `${outputDir}/modules/svg/$name.js`,
-    globals: {
-      default: '*'
-    },
-    package: {
-      name: 'default',
-      main: outputPath
-    }
+task('ng.modules', () => {
+  return new Promise((res, rej) => {
+    const tsc = spawn(resolve('node_modules/.bin/tsc'), [
+      '--p',
+      resolve('src/modules')
+    ])
+    tsc.on('close', res)
   })
-  src('test.ts', { base: 'src/modules/svg' })
-    .dest('.build/modules/svg')
-    .exec()
-  src('src/modules/svg/index.ts')
-    .file('*', (file: SparkyFile) => file.rename('index.d.ts'))
-    .dest('.build/modules/svg/$name')
-    .exec()
-
-  config.bundle('index').instructions('> [src/modules/svg/test.ts]')
-  config.run()
-})
-
-task('ng.util', () => {
-  const config = FuseBox.init({
-    homeDir,
-    target: 'universal@es5',
-    output: `${outputDir}/modules/util/$name.js`,
-    globals: {
-      default: '*'
-    },
-    package: {
-      name: 'default',
-      main: outputPath
-    }
-  })
-  src('**/*.ts', { base: 'src/modules/util' })
-    .dest('.build/modules/util')
-    .exec()
-    .then(() => {
-      return src('.build/modules/util/index.ts')
-        .file('*', (file: SparkyFile) => file.rename('index.d.ts'))
-        .dest('.build/modules/util/$name')
-        .exec()
-        .then(() => {
-          unlinkSync('.build/modules/util/index.ts')
-        })
-    })
-
-  config
-    .bundle('index')
-    .instructions(
-      '> [src/modules/util/tokens.ts] + [src/modules/util/window.service.ts]'
-    )
-  config.run()
 })
