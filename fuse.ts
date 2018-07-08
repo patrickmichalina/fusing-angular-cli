@@ -4,6 +4,7 @@ import { resolve } from 'path'
 import { argv } from 'yargs'
 import shabang from './tools/scripts/fuse-shebang'
 import { SparkyFile } from 'fuse-box/sparky/SparkyFile'
+import { unlinkSync } from 'fs'
 
 const appName = 'fng'
 const outputDir = '.build'
@@ -47,7 +48,7 @@ task('cp.jest', () => {
   return src('jest/**', { base: 'src/templates/unit-tests' }).dest('.build/')
 })
 
-task('bundle', ['cp.jest', 'ng.svg'], () => {
+task('bundle', ['cp.jest', 'ng.util', 'ng.svg'], () => {
   bundle.instructions('> [src/index.ts]')
   !isProdBuild &&
     bundle.watch(`src/**`).completed(fp => shabang(fp.bundle, absOutputPath))
@@ -80,5 +81,39 @@ task('ng.svg', () => {
     .exec()
 
   config.bundle('index').instructions('> [src/modules/svg/test.ts]')
+  config.run()
+})
+
+task('ng.util', () => {
+  const config = FuseBox.init({
+    homeDir,
+    target: 'universal@es5',
+    output: `${outputDir}/modules/util/$name.js`,
+    globals: {
+      default: '*'
+    },
+    package: {
+      name: 'default',
+      main: outputPath
+    }
+  })
+  src('**/*.ts', { base: 'src/modules/util' })
+    .dest('.build/modules/util')
+    .exec()
+    .then(() => {
+      return src('.build/modules/util/index.ts')
+        .file('*', (file: SparkyFile) => file.rename('index.d.ts'))
+        .dest('.build/modules/util/$name')
+        .exec()
+        .then(() => {
+          unlinkSync('.build/modules/util/index.ts')
+        })
+    })
+
+  config
+    .bundle('index')
+    .instructions(
+      '> [src/modules/util/tokens.ts] + [src/modules/util/window.service.ts]'
+    )
   config.run()
 })
