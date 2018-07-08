@@ -79,6 +79,6 @@ task('ng.svg', () => {
     .dest('.build/modules/svg/$name')
     .exec()
 
-  config.bundle('index').instructions('! [src/modules/svg/test.ts]')
+  config.bundle('index').instructions('> [src/modules/svg/test.ts]')
   config.run()
 })
