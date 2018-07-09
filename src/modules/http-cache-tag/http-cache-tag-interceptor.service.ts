@@ -1,9 +1,13 @@
 import { Inject, Injectable } from '@angular/core'
 import {
   HttpHandler,
+  HttpHeaderResponse,
   HttpInterceptor,
+  HttpProgressEvent,
   HttpRequest,
-  HttpResponse
+  HttpResponse,
+  HttpSentEvent,
+  HttpUserEvent
 } from '@angular/common/http'
 import {
   CACHE_TAG_CONFIG,
@@ -12,6 +16,7 @@ import {
   CacheTagConfig
 } from './http-cache-tag.server.module'
 import { map } from 'rxjs/operators'
+import { Observable } from 'rxjs'
 
 // tslint:disable:no-class
 // tslint:disable:no-this

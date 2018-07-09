@@ -9,7 +9,7 @@ export interface IWindowService {
 // tslint:disable:no-this
 @Injectable()
 export class WindowService implements IWindowService {
-  constructor(@Inject(WINDOW) private _window: Window) {}
+  constructor(@Inject(WINDOW) private _window: any) {}
 
   public window<T>(): Window & T {
     return this._window as Window & T

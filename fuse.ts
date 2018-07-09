@@ -61,9 +61,9 @@ task('bundle', ['cp.jest', 'ng.modules'], () => {
 
 task('ng.modules', () => {
   return new Promise((res, rej) => {
-    const tsc = spawn(resolve('node_modules/.bin/tsc'), [
+    const tsc = spawn(resolve('node_modules/.bin/ngc'), [
       '--p',
-      resolve('src/modules')
+      resolve('src/modules/tsconfig.aot.json')
     ])
     tsc.on('close', res)
   })
