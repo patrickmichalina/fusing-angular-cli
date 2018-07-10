@@ -3,7 +3,8 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-  HttpResponse
+  HttpResponse,
+  HttpEvent
 } from '@angular/common/http'
 import {
   CACHE_TAG_CONFIG,
@@ -12,6 +13,7 @@ import {
   CacheTagConfig
 } from './http-cache-tag.server.module'
 import { map } from 'rxjs/operators'
+import { Observable } from 'rxjs'
 
 // tslint:disable:no-class
 // tslint:disable:no-this
@@ -36,7 +38,10 @@ export class HttpCacheTagInterceptor implements HttpInterceptor {
     return this.config.cacheableUrls.test(url)
   }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler) {
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       map(event => {
         if (

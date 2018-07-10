@@ -2,7 +2,7 @@ import { FuseBox, QuantumPlugin, JSONPlugin, RawPlugin } from 'fuse-box'
 import { src, task } from 'fuse-box/sparky'
 import { resolve } from 'path'
 import { argv } from 'yargs'
-import { spawn } from 'child_process'
+import { execSync } from 'child_process'
 import shabang from './tools/scripts/fuse-shebang'
 // import { unlinkSync } from 'fs'
 
@@ -61,10 +61,9 @@ task('bundle', ['cp.jest', 'ng.modules'], () => {
 
 task('ng.modules', () => {
   return new Promise((res, rej) => {
-    const tsc = spawn(resolve('node_modules/.bin/ngc'), [
-      '--p',
-      resolve('src/modules/tsconfig.aot.json')
-    ])
-    tsc.on('close', res)
+    const tsc = execSync(
+      resolve('node_modules/.bin/ngc --p src/modules/tsconfig.aot.json')
+    ).toString()
+    return tsc ? rej() : res()
   })
 })
