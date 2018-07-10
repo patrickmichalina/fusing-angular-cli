@@ -10,7 +10,6 @@ import {
   EnvPlugin,
   WebIndexPlugin
 } from 'fuse-box'
-import { exec, task, watch } from 'fuse-box/sparky'
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
 import { NgPolyfillPlugin } from '../fusebox/ng.polyfill.plugin'
@@ -20,8 +19,8 @@ import { NgAotFactoryPlugin } from '../fusebox/ng.aot-factory.plugin'
 import { main as ngc } from '@angular/compiler-cli/src/main'
 import { CompressionPlugin } from '../fusebox/compression.plugin'
 import { appEnvironmentVariables } from '../utilities/environment-variables'
-import { renderSingleSass, renderSassDir } from '../utilities/sass'
-import { SparkyFile } from 'fuse-box/sparky/SparkyFile'
+import { renderSassDir } from '../utilities/sass'
+import { exec } from 'child_process'
 import clearTerminal from '../utilities/clear'
 import readConfig_ from '../utilities/read-config'
 
@@ -66,7 +65,7 @@ function serve(isProdBuild = false) {
       const serverOutput = resolve(config.fusebox.server.outputDir)
       const browserOutput = resolve(config.fusebox.browser.outputDir)
       const modulesFolder = resolve(process.cwd(), 'node_modules')
-      const watchDir = `${homeDir}/src/**`
+      const watchDir = resolve(`${homeDir}/src/**`)
       const browserModule = isAotBuild
         ? config.fusebox.browser.aotBrowserModule
         : config.fusebox.browser.browserModule
@@ -181,17 +180,26 @@ function serve(isProdBuild = false) {
         .instructions(` !> [${browserModule}]`)
         .splitConfig({ dest: '../js/modules' })
 
-      task('scss.watch', () =>
-        watch('src/**/**.*').file('*.scss', (f: SparkyFile) => {
-          f.homePath && renderSingleSass(f.homePath)
-        })
-      )
-
-      exec('scss.watch')
-
       logInfo('Bundling your application, this may take some time...')
 
       renderSassDir()
-      fuseBrowser.run({ chokidar: { ignored: /.scss/g } })
+
+      const sass = exec(
+        'node_modules/.bin/node-sass --watch src/**/*.scss --output-style compressed --output src/**'
+      )
+      sass.on('error', err => {
+        console.log(err)
+        process.exit(1)
+      })
+      sass.on('message', err => {
+        console.error(err)
+        process.exit(1)
+      })
+      sass.stderr.on('data', err => {
+        console.log(err)
+        process.exit(1)
+      })
+
+      fuseBrowser.run({ chokidar: { ignored: /^(.*\.scss$)*$/gim } })
     })
 }
