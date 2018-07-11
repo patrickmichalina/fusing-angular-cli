@@ -10,7 +10,7 @@ import { WindowService } from './window.service'
 // tslint:disable-next-line:no-class
 @NgModule()
 export class WindowServerModule {
-  static forRoot(windowObject: any): ModuleWithProviders {
+  static forRoot(windowObject?: any): ModuleWithProviders {
     return {
       ngModule: WindowServerModule,
       providers: [
