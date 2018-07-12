@@ -44,7 +44,7 @@ function attemptToCacheInLru(key: string, lru?: LruCache) {
 }
 
 function attemptToGetCachedValue<T>(key: string, lru?: LruCache) {
-  return lru && lru.get<T>(key)
+  return lru && lru.get<T>(sha256(key))
 }
 
 // tslint:disable:no-this
@@ -66,7 +66,7 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
     const url = constructFbUrl(this.afdb, path)
     const params = getParams({ auth: this.authToken })
     const cacheKey = getFullUrl(url, params)
-    const cachedValue = attemptToGetCachedValue<T>(cacheKey)
+    const cachedValue = attemptToGetCachedValue<T>(cacheKey, this.lru)
 
     const baseObs = this.authToken
       ? this.http.get<T>(url, { params })
