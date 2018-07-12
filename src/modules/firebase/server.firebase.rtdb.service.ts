@@ -1,10 +1,47 @@
-import { catchError, take } from 'rxjs/operators'
+import { catchError, take, tap } from 'rxjs/operators'
 import { AngularFireDatabase } from 'angularfire2/database'
 import { Inject, Injectable, Optional } from '@angular/core'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { FIREBASE_USER_AUTH_TOKEN } from './server.firebase.module'
+import {
+  FIREBASE_USER_AUTH_TOKEN,
+  LRU_CACHE,
+  LruCache
+} from './server.firebase.module'
 import { Observable, of } from 'rxjs'
 import { IUniversalRtdbService } from './rtdb.interface'
+import { createHash } from 'crypto'
+
+function sha256(data: string) {
+  return createHash('sha256')
+    .update(data)
+    .digest('base64')
+}
+
+function constructFbUrl(db: AngularFireDatabase, path: string) {
+  const query = db.database.ref(path)
+  return `${query.toString()}.json`
+}
+
+function getFullUrl(base: string, params: HttpParams) {
+  const stringifiedParams = params.toString()
+  return stringifiedParams ? `${base}?${params.toString()}` : base
+}
+
+function getParams(fromObject = {}) {
+  return new HttpParams({
+    fromObject
+  })
+}
+
+function mapUndefined(err: any) {
+  return of(undefined)
+}
+
+function attempToCacheInLru(key: string, lru?: LruCache) {
+  return function(response?: any) {
+    lru && lru.set(sha256(key), response)
+  }
+}
 
 // tslint:disable:no-this
 // tslint:disable-next-line:no-class
@@ -15,26 +52,25 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
     private afdb: AngularFireDatabase,
     @Optional()
     @Inject(FIREBASE_USER_AUTH_TOKEN)
-    private authToken?: string
+    private authToken?: string,
+    @Optional()
+    @Inject(LRU_CACHE)
+    private lru?: LruCache
   ) {}
 
   universalObject<T>(path: string): Observable<T | undefined> {
-    const query = this.afdb.database.ref(path)
-    const url = `${query.toString()}.json`
+    const url = constructFbUrl(this.afdb, path)
+    const params = getParams({ auth: this.authToken })
+    const cacheKey = getFullUrl(url, params)
+
     const baseObs = this.authToken
-      ? this.http.get<T>(url, {
-          params: new HttpParams({
-            fromObject: {
-              auth: this.authToken
-            }
-          })
-        })
+      ? this.http.get<T>(url, { params })
       : this.http.get<T>(url)
+
     return baseObs.pipe(
       take(1),
-      catchError(err => {
-        return of(undefined)
-      })
+      tap(attempToCacheInLru(cacheKey, this.lru)),
+      catchError(mapUndefined)
     )
   }
 }
