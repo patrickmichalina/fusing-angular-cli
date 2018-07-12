@@ -6,9 +6,7 @@ import {
   SkipSelf
 } from '@angular/core'
 import { ServerUniversalRtDbService } from './server.firebase.rtdb.service'
-import { HttpClient } from '@angular/common/http'
 import { UniversalRtDbService } from './browser.firebase.rtdb.service'
-import { AngularFireDatabase } from 'angularfire2/database'
 
 export interface LruCache {
   readonly get: <T>(key: string) => T
@@ -31,13 +29,7 @@ export class FirebaseServerModule {
       providers: [
         {
           provide: UniversalRtDbService,
-          useClass: ServerUniversalRtDbService,
-          deps: [
-            HttpClient,
-            AngularFireDatabase,
-            FIREBASE_USER_AUTH_TOKEN,
-            LRU_CACHE
-          ]
+          useClass: ServerUniversalRtDbService
         }
       ]
     }

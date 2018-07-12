@@ -37,10 +37,14 @@ function mapUndefined(err: any) {
   return of(undefined)
 }
 
-function attempToCacheInLru(key: string, lru?: LruCache) {
+function attemptToCacheInLru(key: string, lru?: LruCache) {
   return function(response?: any) {
     lru && lru.set(sha256(key), response)
   }
+}
+
+function attemptToGetCachedValue<T>(key: string, lru?: LruCache) {
+  return lru && lru.get<T>(key)
 }
 
 // tslint:disable:no-this
@@ -62,15 +66,18 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
     const url = constructFbUrl(this.afdb, path)
     const params = getParams({ auth: this.authToken })
     const cacheKey = getFullUrl(url, params)
+    const cachedValue = attemptToGetCachedValue<T>(cacheKey)
 
     const baseObs = this.authToken
       ? this.http.get<T>(url, { params })
       : this.http.get<T>(url)
 
-    return baseObs.pipe(
-      take(1),
-      tap(attempToCacheInLru(cacheKey, this.lru)),
-      catchError(mapUndefined)
-    )
+    return cachedValue
+      ? of(cachedValue)
+      : baseObs.pipe(
+          take(1),
+          tap(attemptToCacheInLru(cacheKey, this.lru)),
+          catchError(mapUndefined)
+        )
   }
 }

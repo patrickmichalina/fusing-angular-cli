@@ -14,3 +14,4 @@ export {
   ServerUniversalRtDbService
 } from './firebase/server.firebase.rtdb.service'
 export { UniversalRtDbService } from './firebase/browser.firebase.rtdb.service'
+export { LRU_CACHE } from './firebase/server.firebase.module'
