@@ -19,7 +19,7 @@ import { sha1 } from 'object-hash'
 @Injectable()
 export class UniversalRtDbService implements IUniversalRtdbService {
   // tslint:disable-next-line:readonly-keyword
-  readFromCache = true
+  private readFromCache = true
 
   constructor(
     public angularFireDatabase: AngularFireDatabase,
@@ -40,6 +40,9 @@ export class UniversalRtDbService implements IUniversalRtdbService {
     this.readFromCache = false
   }
 
+  /*
+  * Safely query a Firebase RTDB object on both server and client
+  */
   universalObject<T>(path: string): Observable<T | undefined> {
     const cached = this.ts.get<T | undefined>(this.cacheKey(path), undefined)
     const base = this.angularFireDatabase
@@ -58,6 +61,9 @@ export class UniversalRtDbService implements IUniversalRtdbService {
         )
   }
 
+  /*
+  * Safely query a Firebase RTDB list on both server and client
+  */
   universalList<T>(
     path: string,
     queryFn?: QueryFn
