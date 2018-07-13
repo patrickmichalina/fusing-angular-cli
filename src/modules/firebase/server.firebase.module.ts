@@ -13,11 +13,6 @@ export interface LruCache {
   readonly set: <T>(key: string, value: T) => T
 }
 
-export const FIREBASE_USER_AUTH_TOKEN = new InjectionToken<string>(
-  'fng.fb.svr.usr.auth'
-)
-
-export const FIREBASE_DATABASE_URL = new InjectionToken<string>('fng.fb.db.url')
 export const LRU_CACHE = new InjectionToken<LruCache>('fng.lru')
 
 // tslint:disable-next-line:no-class

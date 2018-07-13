@@ -1,15 +1,18 @@
-import { catchError, filter, map, startWith, take } from 'rxjs/operators'
+import {
+  catchError,
+  filter,
+  map,
+  startWith,
+  take,
+  distinctUntilChanged
+} from 'rxjs/operators'
 import { ApplicationRef, Injectable, Inject } from '@angular/core'
-import { AngularFireDatabase } from 'angularfire2/database'
+import { AngularFireDatabase, QueryFn } from 'angularfire2/database'
 import { makeStateKey, TransferState } from '@angular/platform-browser'
 import { Observable, of } from 'rxjs'
-import { FIREBASE_DATABASE_URL } from './server.firebase.module'
 import { IUniversalRtdbService } from './rtdb.interface'
-// import { sha1 } from 'object-hash'
-
-interface CachedHttp<T> {
-  readonly body: T
-}
+import { FIREBASE_DATABASE_URL } from './tokens'
+import { sha1 } from 'object-hash'
 
 // tslint:disable:no-this
 // tslint:disable-next-line:no-class
@@ -38,10 +41,7 @@ export class UniversalRtDbService implements IUniversalRtdbService {
   }
 
   universalObject<T>(path: string): Observable<T | undefined> {
-    const cached = this.ts.get<CachedHttp<T> | undefined>(
-      this.cacheKey(path),
-      undefined
-    )
+    const cached = this.ts.get<T | undefined>(this.cacheKey(path), undefined)
     const base = this.angularFireDatabase
       .object<T>(path)
       .valueChanges()
@@ -53,12 +53,26 @@ export class UniversalRtDbService implements IUniversalRtdbService {
     return !this.readFromCache
       ? base
       : base.pipe(
-          startWith(cached && cached.body)
-          // distinctUntilChanged((x, y) => (x && sha1(x)) === (y && sha1(y)))
+          startWith(cached),
+          distinctUntilChanged((x, y) => (x && sha1(x)) === (y && sha1(y)))
         )
   }
 
+  universalList<T>(
+    path: string,
+    queryFn?: QueryFn
+  ): Observable<ReadonlyArray<T>> {
+    const cached = this.ts.get<ReadonlyArray<T>>(this.cacheKey(path), [])
+    const base = this.angularFireDatabase.list<T>(path, queryFn).valueChanges()
+    return this.readFromCache
+      ? base.pipe(
+          startWith(cached),
+          distinctUntilChanged((x, y) => (x && sha1(x)) === (y && sha1(y)))
+        )
+      : base
+  }
+
   private cacheKey(path: string) {
-    return makeStateKey<string>(`G.${this.firebaseDatabaseUrl}/${path}.json`)
+    return makeStateKey<string>(`RTDB.${this.firebaseDatabaseUrl}/${path}.json`)
   }
 }
