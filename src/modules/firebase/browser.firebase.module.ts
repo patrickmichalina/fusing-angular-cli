@@ -1,16 +1,30 @@
-import { NgModule } from '@angular/core'
+import {
+  NgModule,
+  ModuleWithProviders,
+  Optional,
+  SkipSelf
+} from '@angular/core'
 import { UniversalRtDbService } from './browser.firebase.rtdb.service'
 
-// export const FIREBASE_USER_AUTH_TOKEN = new InjectionToken<string>(
-//   'fng.fb.svr.usr.auth'
-// )
-
-// export const FIREBASE_DATABASE_URL = new InjectionToken<string>(
-//   'fng.fb.db.url'
-// )
-
 // tslint:disable-next-line:no-class
-@NgModule({
-  providers: [UniversalRtDbService]
-})
-export class FirebaseBrowserModule {}
+@NgModule()
+export class FirebaseBrowserModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: FirebaseBrowserModule,
+      providers: [UniversalRtDbService]
+    }
+  }
+
+  constructor(
+    @Optional()
+    @SkipSelf()
+    parentModule: FirebaseBrowserModule
+  ) {
+    // tslint:disable-next-line:no-if-statement
+    if (parentModule)
+      throw new Error(
+        'FirebaseBrowserModule already loaded. Import in root module only.'
+      )
+  }
+}

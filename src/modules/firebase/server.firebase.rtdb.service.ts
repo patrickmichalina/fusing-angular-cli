@@ -1,7 +1,7 @@
-import { catchError, take, tap } from 'rxjs/operators'
+import { catchError, take, tap, map } from 'rxjs/operators'
 import { AngularFireDatabase } from 'angularfire2/database'
 import { Inject, Injectable, Optional } from '@angular/core'
-import { HttpClient, HttpParams } from '@angular/common/http'
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http'
 import {
   FIREBASE_USER_AUTH_TOKEN,
   LRU_CACHE,
@@ -41,8 +41,12 @@ function mapUndefined(err: any) {
 
 function attemptToCacheInLru(key: string, lru?: LruCache) {
   return function(response?: any) {
-    lru && lru.set(sha256(key), response)
+    lru && response && lru.set(sha256(key), response)
   }
+}
+
+function httpResponseToValue<T>(value: HttpResponse<T>): T | undefined {
+  return (value && value.body) || undefined
 }
 
 function attemptToGetCachedValue<T>(key: string, lru?: LruCache) {
@@ -82,13 +86,14 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
     const tsKey = makeRtDbStateTransferKey(url)
 
     const baseObs = this.authToken
-      ? this.http.get<T>(url, { params })
-      : this.http.get<T>(url)
+      ? this.http.get<HttpResponse<T>>(url, { params })
+      : this.http.get<HttpResponse<T>>(url)
 
     return cachedValue
       ? of(cachedValue).pipe(tap(writeLruCacheToTransferState(this.ts, tsKey)))
       : baseObs.pipe(
           take(1),
+          map(httpResponseToValue),
           tap(attemptToCacheInLru(cacheKey, this.lru)),
           catchError(mapUndefined)
         )

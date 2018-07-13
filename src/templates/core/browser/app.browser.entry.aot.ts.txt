@@ -1,4 +1,10 @@
 import { platformBrowser } from '@angular/platform-browser'
 import { AppBrowserModuleNgFactory } from './app.browser.module.ngfactory'
 
-platformBrowser().bootstrapModuleFactory(AppBrowserModuleNgFactory)
+function domContentLoadedHandler() {
+  platformBrowser()
+    .bootstrapModuleFactory(AppBrowserModuleNgFactory)
+    .catch(console.log)
+}
+
+document.addEventListener('DOMContentLoaded', domContentLoadedHandler)
