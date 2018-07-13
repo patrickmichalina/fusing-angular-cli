@@ -10,6 +10,8 @@ import {
 import { Observable, of } from 'rxjs'
 import { IUniversalRtdbService } from './rtdb.interface'
 import { createHash } from 'crypto'
+import { TransferState, StateKey } from '@angular/platform-browser'
+import { makeRtDbStateTransferKey } from './common'
 
 function sha256(data: string) {
   return createHash('sha256')
@@ -47,6 +49,15 @@ function attemptToGetCachedValue<T>(key: string, lru?: LruCache) {
   return lru && lru.get<T>(sha256(key))
 }
 
+function writeLruCacheToTransferState<T>(
+  ts: TransferState,
+  key: StateKey<string>
+) {
+  return function(val: T) {
+    ts.set(key, val)
+  }
+}
+
 // tslint:disable:no-this
 // tslint:disable-next-line:no-class
 @Injectable()
@@ -54,6 +65,7 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
   constructor(
     private http: HttpClient,
     private afdb: AngularFireDatabase,
+    private ts: TransferState,
     @Optional()
     @Inject(FIREBASE_USER_AUTH_TOKEN)
     private authToken?: string,
@@ -67,13 +79,14 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
     const params = getParams({ auth: this.authToken })
     const cacheKey = getFullUrl(url, params)
     const cachedValue = attemptToGetCachedValue<T>(cacheKey, this.lru)
+    const tsKey = makeRtDbStateTransferKey(url)
 
     const baseObs = this.authToken
       ? this.http.get<T>(url, { params })
       : this.http.get<T>(url)
 
     return cachedValue
-      ? of(cachedValue)
+      ? of(cachedValue).pipe(tap(writeLruCacheToTransferState(this.ts, tsKey)))
       : baseObs.pipe(
           take(1),
           tap(attemptToCacheInLru(cacheKey, this.lru)),
