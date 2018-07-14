@@ -4,12 +4,17 @@ import { resolve } from 'path'
 import { ngExpressEngine } from '@nguniversal/express-engine'
 import { AppServerModule } from './server.angular.module'
 import { stat, createReadStream } from 'fs'
+import { LRU_CACHE } from 'fusing-angular-cli/.build/modules/src/modules'
+import * as lru from 'lru-cache'
 
 const environment = JSON.parse(process.env.FUSING_ANGULAR || '{}')
 const isLocalDevelopmentServer = environment.ENV === 'dev'
+const LRU = new lru({
+  max: 500,
+  maxAge: 1000 * 30
+})
 
 // const xhr2 = require('xhr2')
-
 // tslint:disable-next-line:no-object-mutation
 // xhr2.prototype._restrictedHeaders.cookie = false
 
@@ -27,7 +32,14 @@ expressApp.set('etag', false)
 expressApp.set('view engine', 'html')
 expressApp.set('views', publicDir)
 
-expressApp.engine('html', ngExpressEngine({ bootstrap: AppServerModule }))
+expressApp.engine('html', ngExpressEngine({
+  bootstrap: AppServerModule,
+  providers: [
+    {
+      provide: LRU_CACHE, useValue: LRU
+    }
+  ]
+}))
 
 expressApp.use('/favicon.ico', (req, res) => res.sendStatus(204)) // TODO: FAVICONS
 

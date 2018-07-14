@@ -71,6 +71,9 @@ interface AnswersDictionary {
 interface WorkingAnswersDictionary {
   readonly [key: string]: any
   readonly fullname?: string
+  readonly ide?: string
+  readonly firebase?: boolean
+  readonly firebaseModules?: ReadonlyArray<string>
 }
 
 interface QuestionWrapper {
@@ -129,6 +132,56 @@ const Q_IDE = {
     current: WorkingAnswersDictionary,
     stream: Subject<any>
   ) => {
+    stream.next(Q_INCLUDE_FIREBASE.question)
+  }
+}
+
+const Q_INCLUDE_FIREBASE = {
+  question: {
+    type: 'confirm',
+    name: 'useFirebase',
+    message: 'Are you using Firebase?',
+    default: false
+  },
+  answerHandler: (
+    response: QustionResponse,
+    current: WorkingAnswersDictionary,
+    stream: Subject<any>
+  ) => {
+    current.useFirebase
+      ? stream.next(Q_FIREBASE_CHOICES.question)
+      : stream.complete()
+  }
+}
+
+const Q_FIREBASE_CHOICES = {
+  question: {
+    type: 'checkbox',
+    name: 'firebaseConfig',
+    message: 'Which modules of Firebase to include?',
+    choices: [
+      {
+        name: 'Reat Time Database (RTDB)',
+        value: 'rtdb',
+        checked: true
+      },
+      {
+        name: 'Firestore',
+        value: 'firestore',
+        checked: true
+      },
+      {
+        name: 'Auth',
+        value: 'auth',
+        checked: false
+      }
+    ]
+  },
+  answerHandler: (
+    response: QustionResponse,
+    current: WorkingAnswersDictionary,
+    stream: Subject<any>
+  ) => {
     stream.complete()
   }
 }
@@ -168,7 +221,9 @@ const QUESTION_DICT = [
   Q_FULL_NAME,
   Q_SHORT_NAME,
   Q_TEST_RUNNERS,
-  Q_IDE
+  Q_IDE,
+  Q_INCLUDE_FIREBASE,
+  Q_FIREBASE_CHOICES
   // Q_APP_TYPE
 ].reduce(
   (acc, curr) => {
@@ -305,6 +360,7 @@ function create(overwriteExisting = false) {
         }, {})
       }
       collector.next(merged)
+      // TODO: haneld edge case of task not existing in dict
       QUESTION_DICT[response.name].answerHandler(response, merged, source)
     },
     logError,
