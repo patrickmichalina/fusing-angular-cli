@@ -8,10 +8,10 @@ import { UniversalRtDbService } from './browser.firebase.rtdb.service'
 
 // tslint:disable-next-line:no-class
 @NgModule()
-export class FirebaseBrowserModule {
+export class FirebaseRtDbBrowserModule {
   static forRoot(): ModuleWithProviders {
     return {
-      ngModule: FirebaseBrowserModule,
+      ngModule: FirebaseRtDbBrowserModule,
       providers: [UniversalRtDbService]
     }
   }
@@ -19,12 +19,12 @@ export class FirebaseBrowserModule {
   constructor(
     @Optional()
     @SkipSelf()
-    parentModule: FirebaseBrowserModule
+    parentModule: FirebaseRtDbBrowserModule
   ) {
     // tslint:disable-next-line:no-if-statement
     if (parentModule)
       throw new Error(
-        'FirebaseBrowserModule already loaded. Import in root module only.'
+        'FirebaseRtDbBrowserModule already loaded. Import in root module only.'
       )
   }
 }

@@ -1,3 +1,4 @@
+import { AngularFireDatabase } from 'angularfire2/database'
 import { Observable } from 'rxjs'
 import { QueryFn } from 'angularfire2/database'
 
@@ -7,4 +8,10 @@ export interface IUniversalRtdbService {
     path: string,
     queryFn?: QueryFn
   ) => Observable<ReadonlyArray<T>>
+}
+
+export function extractRtDbHostFromLib(afRtDb: AngularFireDatabase) {
+  return `https://${
+    (afRtDb.database.app.options as any).projectId
+  }.firebaseio.com`
 }

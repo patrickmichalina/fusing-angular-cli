@@ -1,5 +1,4 @@
 import {
-  InjectionToken,
   NgModule,
   ModuleWithProviders,
   Optional,
@@ -8,19 +7,12 @@ import {
 import { ServerUniversalRtDbService } from './server.firebase.rtdb.service'
 import { UniversalRtDbService } from './browser.firebase.rtdb.service'
 
-export interface LruCache {
-  readonly get: <T>(key: string) => T
-  readonly set: <T>(key: string, value: T) => T
-}
-
-export const LRU_CACHE = new InjectionToken<LruCache>('fng.lru')
-
 // tslint:disable-next-line:no-class
 @NgModule()
-export class FirebaseServerModule {
+export class FirebaseRtDbServerModule {
   static forRoot(): ModuleWithProviders {
     return {
-      ngModule: FirebaseServerModule,
+      ngModule: FirebaseRtDbServerModule,
       providers: [
         {
           provide: UniversalRtDbService,
@@ -33,12 +25,12 @@ export class FirebaseServerModule {
   constructor(
     @Optional()
     @SkipSelf()
-    parentModule: FirebaseServerModule
+    parentModule: FirebaseRtDbServerModule
   ) {
     // tslint:disable-next-line:no-if-statement
     if (parentModule)
       throw new Error(
-        'FirebaseServerModule already loaded. Import in root module only.'
+        'FirebaseRtDbServerModule already loaded. Import in root module only.'
       )
   }
 }

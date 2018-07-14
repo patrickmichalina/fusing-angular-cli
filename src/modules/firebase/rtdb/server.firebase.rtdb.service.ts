@@ -4,47 +4,29 @@ import {
   QueryFn,
   PathReference
 } from 'angularfire2/database'
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core'
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http'
-import { LRU_CACHE, LruCache } from './server.firebase.module'
+import { Inject, Injectable, Optional } from '@angular/core'
+import { HttpClient, HttpResponse } from '@angular/common/http'
+import {
+  LRU_CACHE,
+  LruCache,
+  attemptToGetLruCachedValue,
+  attemptToCacheInLru,
+  FIREBASE_USER_AUTH_TOKEN,
+  getFullUrl
+} from '../common/server'
 import { Observable, of } from 'rxjs'
-import { IUniversalRtdbService } from './rtdb.interface'
-import { createHash } from 'crypto'
-import { TransferState, StateKey } from '@angular/platform-browser'
-import { makeRtDbStateTransferKey } from './common'
-import { makeStateKey } from '@angular/platform-browser'
-
-export const FIREBASE_USER_AUTH_TOKEN = new InjectionToken<string>(
-  'fng.fb.svr.usr.auth'
-)
-
-function sha256(data: string) {
-  return createHash('sha256')
-    .update(data)
-    .digest('base64')
-}
+import { TransferState } from '@angular/platform-browser'
+import { makeRtDbStateTransferKey } from './server.firebase.rtdb.common'
+import {
+  cacheInStateTransfer,
+  removeHttpInterceptorCache,
+  getParams
+} from '../common/browser'
+import { IUniversalRtdbService } from './browser.firebase.rtdb.common'
 
 function constructFbUrl(db: AngularFireDatabase, path: string) {
   const query = db.database.ref(path)
   return `${query.toString()}.json`
-}
-
-function getFullUrl(base: string, params: HttpParams) {
-  const stringifiedParams = params.toString()
-  return stringifiedParams ? `${base}?${params.toString()}` : base
-}
-
-function getParams(fromObject = {} as any) {
-  return new HttpParams({
-    fromObject: Object.keys(fromObject).reduce((acc, curr) => {
-      return fromObject[curr]
-        ? {
-            ...acc,
-            [curr]: fromObject[curr]
-          }
-        : { ...acc }
-    }, {})
-  })
 }
 
 function mapUndefined(err: any) {
@@ -53,28 +35,6 @@ function mapUndefined(err: any) {
 
 function mapEmptyList<T>(err: any) {
   return of([] as ReadonlyArray<T>)
-}
-
-function attemptToCacheInLru(key: string, lru?: LruCache) {
-  return function(response?: any) {
-    lru && response && lru.set(sha256(key), response)
-  }
-}
-
-function attemptToGetCachedValue<T>(key: string, lru?: LruCache) {
-  return lru && lru.get<T>(sha256(key))
-}
-
-function cacheInStateTransfer<T>(ts: TransferState, key: StateKey<string>) {
-  return function(val: T) {
-    ts.set(key, val)
-  }
-}
-
-function removeHttpInterceptorCache<T>(ts: TransferState, key: string) {
-  return function(val: T) {
-    ts.remove(makeStateKey<string>(`G.${key}`))
-  }
 }
 
 // tslint:disable:no-this
@@ -97,7 +57,7 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
     const url = constructFbUrl(this.afdb, path)
     const params = getParams({ auth: this.authToken })
     const cacheKey = getFullUrl(url, params)
-    const cachedValue = attemptToGetCachedValue<T>(cacheKey, this.lru)
+    const cachedValue = attemptToGetLruCachedValue<T>(cacheKey, this.lru)
     const tsKey = makeRtDbStateTransferKey(url)
     const baseObs = this.http.get<HttpResponse<T>>(url, { params })
 
@@ -112,10 +72,8 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
         )
   }
 
-  universalList<T>(
-    path: PathReference,
-    queryFn?: QueryFn
-  ): Observable<ReadonlyArray<T>> {
+  // tslint:disable:readonly-array
+  universalList<T>(path: PathReference, queryFn?: QueryFn): Observable<T[]> {
     const query =
       (queryFn && queryFn(this.afdb.database.ref(path.toString()))) ||
       this.afdb.database.ref(path.toString())
@@ -125,11 +83,8 @@ export class ServerUniversalRtDbService implements IUniversalRtdbService {
     const params = getParams({ ...paramsFromString, auth: this.authToken })
     const cacheKey = getFullUrl(url, params)
     const tsKey = makeRtDbStateTransferKey(url)
-    const baseObs = this.http.get<ReadonlyArray<T>>(url, { params })
-    const cachedValue = attemptToGetCachedValue<ReadonlyArray<T>>(
-      cacheKey,
-      this.lru
-    )
+    const baseObs = this.http.get<T[]>(url, { params })
+    const cachedValue = attemptToGetLruCachedValue<T[]>(cacheKey, this.lru)
 
     return cachedValue
       ? of(cachedValue).pipe(tap(cacheInStateTransfer(this.ts, tsKey)))
