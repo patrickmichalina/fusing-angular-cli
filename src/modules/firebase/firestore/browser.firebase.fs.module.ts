@@ -5,9 +5,13 @@ import {
   SkipSelf
 } from '@angular/core'
 import { UniversalFirestoreService } from './browser.firebase.fs.service'
+import { AngularFirestoreModule } from 'angularfire2/firestore'
 
 // tslint:disable-next-line:no-class
-@NgModule()
+@NgModule({
+  imports: [AngularFirestoreModule],
+  exports: [AngularFirestoreModule]
+})
 export class FirebaseFsBrowserModule {
   static forRoot(): ModuleWithProviders {
     return {

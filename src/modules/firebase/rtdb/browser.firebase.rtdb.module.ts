@@ -5,9 +5,13 @@ import {
   SkipSelf
 } from '@angular/core'
 import { UniversalRtDbService } from './browser.firebase.rtdb.service'
+import { AngularFireDatabaseModule } from 'angularfire2/database'
 
 // tslint:disable-next-line:no-class
-@NgModule()
+@NgModule({
+  imports: [AngularFireDatabaseModule],
+  exports: [AngularFireDatabaseModule]
+})
 export class FirebaseRtDbBrowserModule {
   static forRoot(): ModuleWithProviders {
     return {

@@ -6,9 +6,13 @@ import {
 } from '@angular/core'
 import { UniversalFirestoreService } from './browser.firebase.fs.service'
 import { ServerUniversalFirestoreService } from './server.firebase.fs.service'
+import { AngularFirestoreModule } from 'angularfire2/firestore'
 
 // tslint:disable-next-line:no-class
-@NgModule()
+@NgModule({
+  imports: [AngularFirestoreModule],
+  exports: [AngularFirestoreModule]
+})
 export class FirebaseFsServerModule {
   static forRoot(): ModuleWithProviders {
     return {
