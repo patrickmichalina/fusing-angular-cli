@@ -38,7 +38,6 @@ import generateTsConfig from '../generators/tsconfig.gen'
 import generateTsDeclartionFile from '../generators/declarations.gen'
 import generateDotEnv from '../generators/env.gen'
 import generateIdeStubs from '../generators/ide.gen'
-import generateFirebase from '../generators/firebase.gen'
 
 command(
   'create [overwrite]',
@@ -394,9 +393,6 @@ function create(overwriteExisting = false) {
           generateTsDeclartionFile(path, overwriteExisting),
           im.config.ide
             ? generateIdeStubs(im.config.ide, path, overwriteExisting)
-            : of(undefined),
-          im.config.firebase
-            ? generateFirebase(path, overwriteExisting)
             : of(undefined)
         ])
       }, im => im),
