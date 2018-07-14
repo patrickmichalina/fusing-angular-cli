@@ -1,3 +1,4 @@
+export { FirebaseUniversalAppModule } from './firebase.app.module'
 export { FirebaseFsBrowserModule } from './firestore/browser.firebase.fs.module'
 export {
   UniversalFirestoreService
