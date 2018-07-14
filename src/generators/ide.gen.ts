@@ -1,4 +1,3 @@
-import { IDE } from '../commands/create'
 import { empty } from 'rxjs'
 import { resolve } from 'path'
 import {
@@ -9,6 +8,7 @@ import {
 import { flatMap } from 'rxjs/operators'
 import * as vsCodeSettings from '../templates/vscode/settings.json.txt'
 import * as vsCodeLaunch from '../templates/vscode/launch.json.txt'
+import { IDE } from '../commands/create-common'
 
 const configPath = '.vscode/settings.json'
 const launchPath = '.vscode/launch.json'

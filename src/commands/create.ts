@@ -38,6 +38,14 @@ import generateTsConfig from '../generators/tsconfig.gen'
 import generateTsDeclartionFile from '../generators/declarations.gen'
 import generateDotEnv from '../generators/env.gen'
 import generateIdeStubs from '../generators/ide.gen'
+import {
+  QuestionWrapper,
+  QustionResponse,
+  WorkingAnswersDictionary,
+  AnswersDictionary,
+  FirebaseConfig
+} from './create-common'
+import { Q_INCLUDE_FIREBASE, Q_FIREBASE } from './create-firebase'
 
 command(
   'create [overwrite]',
@@ -51,41 +59,6 @@ command(
   alias: 'o',
   description: 'Overwrite existing application folder'
 })
-
-export enum IDE {
-  VISUAL_STUDIO_CODE = 'Visual Studio Code',
-  OTHER = 'Other'
-}
-
-interface QustionResponse {
-  readonly name: string
-  readonly answer: string | boolean
-}
-
-interface AnswersDictionary {
-  readonly fullname: string
-  readonly shortname?: string
-  readonly ide?: IDE
-  readonly firebase?: boolean
-  readonly firebaseModules?: ReadonlyArray<string>
-}
-
-interface WorkingAnswersDictionary extends AnswersDictionary {
-  readonly [key: string]: any
-}
-
-interface QuestionWrapper {
-  readonly question: {
-    readonly name: string
-    readonly message: string
-    readonly default: string
-  }
-  readonly answerHandler: (
-    response: QustionResponse,
-    current: WorkingAnswersDictionary,
-    stream: Subject<any>
-  ) => void
-}
 
 const Q_FULL_NAME: QuestionWrapper = {
   question: {
@@ -134,56 +107,6 @@ const Q_IDE = {
   }
 }
 
-const Q_INCLUDE_FIREBASE = {
-  question: {
-    type: 'confirm',
-    name: 'firebase',
-    message: 'Are you using Firebase?',
-    default: false
-  },
-  answerHandler: (
-    response: QustionResponse,
-    current: WorkingAnswersDictionary,
-    stream: Subject<any>
-  ) => {
-    current.useFirebase
-      ? stream.next(Q_FIREBASE_CHOICES.question)
-      : stream.complete()
-  }
-}
-
-const Q_FIREBASE_CHOICES = {
-  question: {
-    type: 'checkbox',
-    name: 'firebaseConfig',
-    message: 'Which modules of Firebase to include?',
-    choices: [
-      {
-        name: 'Reat Time Database (RTDB)',
-        value: 'rtdb',
-        checked: true
-      },
-      {
-        name: 'Firestore',
-        value: 'firestore',
-        checked: true
-      },
-      {
-        name: 'Auth',
-        value: 'auth',
-        checked: false
-      }
-    ]
-  },
-  answerHandler: (
-    response: QustionResponse,
-    current: WorkingAnswersDictionary,
-    stream: Subject<any>
-  ) => {
-    stream.complete()
-  }
-}
-
 // const Q_APP_TYPE = {
 //   question: {
 //     type: 'confirm',
@@ -220,8 +143,7 @@ const QUESTION_DICT = [
   Q_SHORT_NAME,
   Q_TEST_RUNNERS,
   Q_IDE,
-  Q_INCLUDE_FIREBASE,
-  Q_FIREBASE_CHOICES
+  ...Q_FIREBASE
   // Q_APP_TYPE
 ].reduce(
   (acc, curr) => {
@@ -380,6 +302,16 @@ function create(overwriteExisting = false) {
       flatMap(toEnsureProjectDirectoryExists, im => im),
       flatMap(im => {
         const path = resolve(im.config.fullname)
+        const firebaseConfig: FirebaseConfig | undefined = im.config.firebase
+          ? {
+              apiKey: im.config.firebaseApiKey,
+              authDomain: im.config.firebaseAuthDomain,
+              databaseUrl: im.config.firebaseDatabaseUrl,
+              messagingSenderId: im.config.firebaseMesssagingSenderId,
+              projectId: im.config.firebaseProjectId,
+              storageBucket: im.config.firebaseStorageBucket
+            }
+          : undefined
         return forkJoin([
           genNpmPackageJson(im.config.fullname, true, overwriteExisting).pipe(
             flatMap(test(im.config.fullname))
@@ -387,7 +319,7 @@ function create(overwriteExisting = false) {
           generateCoreAngular(im.config.fullname),
           generateGitIgnore(path, overwriteExisting),
           generateTsLint(path, overwriteExisting),
-          generateDotEnv(path, overwriteExisting),
+          generateDotEnv(path, overwriteExisting, firebaseConfig),
           generateFngConfig(path, overwriteExisting),
           generateTsConfig(path, overwriteExisting),
           generateTsDeclartionFile(path, overwriteExisting),
