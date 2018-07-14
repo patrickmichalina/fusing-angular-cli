@@ -4,7 +4,7 @@ import { resolve } from 'path'
 import { ngExpressEngine } from '@nguniversal/express-engine'
 import { AppServerModule } from './server.angular.module'
 import { stat, createReadStream } from 'fs'
-import { LRU_CACHE } from 'fusing-angular-cli/.build/modules/src/modules'
+import { LRU_CACHE } from 'fusing-angular-cli/.build/modules/src/modules/firebase'
 import * as lru from 'lru-cache'
 
 const environment = JSON.parse(process.env.FUSING_ANGULAR || '{}')

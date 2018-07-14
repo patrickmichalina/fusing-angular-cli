@@ -2,12 +2,16 @@ import { NgModule } from '@angular/core'
 import { ServerModule, ServerTransferStateModule } from '@angular/platform-server'
 import { AppModule } from '../app/app.module'
 import { AppComponent } from '../app/app.component'
+import { WindowServerModule } from 'fusing-angular-cli/.build/modules/src/modules'
+import { EnvironmentServerModule } from 'fusing-angular-cli/.build/modules/src/modules/environment'
 
 @NgModule({
   imports: [
-    AppModule,
-    ServerModule,
     ServerTransferStateModule,
+    WindowServerModule.forRoot({}),
+    EnvironmentServerModule,
+    ServerModule,
+    AppModule
   ],
   bootstrap: [AppComponent],
 })
