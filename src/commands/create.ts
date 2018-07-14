@@ -38,6 +38,7 @@ import generateTsConfig from '../generators/tsconfig.gen'
 import generateTsDeclartionFile from '../generators/declarations.gen'
 import generateDotEnv from '../generators/env.gen'
 import generateIdeStubs from '../generators/ide.gen'
+import generateFirebase from '../generators/firebase.gen'
 
 command(
   'create [overwrite]',
@@ -64,16 +65,14 @@ interface QustionResponse {
 
 interface AnswersDictionary {
   readonly fullname: string
-  readonly isUniversalApp: boolean
-  readonly ide: IDE
-}
-
-interface WorkingAnswersDictionary {
-  readonly [key: string]: any
-  readonly fullname?: string
-  readonly ide?: string
+  readonly shortname?: string
+  readonly ide?: IDE
   readonly firebase?: boolean
   readonly firebaseModules?: ReadonlyArray<string>
+}
+
+interface WorkingAnswersDictionary extends AnswersDictionary {
+  readonly [key: string]: any
 }
 
 interface QuestionWrapper {
@@ -139,7 +138,7 @@ const Q_IDE = {
 const Q_INCLUDE_FIREBASE = {
   question: {
     type: 'confirm',
-    name: 'useFirebase',
+    name: 'firebase',
     message: 'Are you using Firebase?',
     default: false
   },
@@ -234,7 +233,7 @@ const QUESTION_DICT = [
 
 const source = new Subject<any>()
 const finalConfigSource = new Subject()
-const collector = new BehaviorSubject<WorkingAnswersDictionary>({})
+const collector = new BehaviorSubject<WorkingAnswersDictionary>({} as any)
 const prompts = source.pipe(
   startWith(Q_FULL_NAME.question),
   shareReplay()
@@ -383,11 +382,9 @@ function create(overwriteExisting = false) {
       flatMap(im => {
         const path = resolve(im.config.fullname)
         return forkJoin([
-          genNpmPackageJson(
-            im.config.fullname,
-            im.config.isUniversalApp,
-            overwriteExisting
-          ).pipe(flatMap(test(im.config.fullname))),
+          genNpmPackageJson(im.config.fullname, true, overwriteExisting).pipe(
+            flatMap(test(im.config.fullname))
+          ),
           generateCoreAngular(im.config.fullname),
           generateGitIgnore(path, overwriteExisting),
           generateTsLint(path, overwriteExisting),
@@ -395,7 +392,12 @@ function create(overwriteExisting = false) {
           generateFngConfig(path, overwriteExisting),
           generateTsConfig(path, overwriteExisting),
           generateTsDeclartionFile(path, overwriteExisting),
-          generateIdeStubs(im.config.ide, path, overwriteExisting)
+          im.config.ide
+            ? generateIdeStubs(im.config.ide, path, overwriteExisting)
+            : of(undefined),
+          im.config.firebase
+            ? generateFirebase(path, overwriteExisting)
+            : of(undefined)
         ])
       }, im => im),
       take(1)

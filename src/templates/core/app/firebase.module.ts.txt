@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core'
 import { FirebaseNameOrConfigToken, FirebaseOptionsToken, AngularFireModule } from 'angularfire2'
-import { FIREBASE_USER_AUTH_TOKEN } from '../firebase/common/server'
+import { FIREBASE_USER_AUTH_TOKEN } from 'fusing-angular-cli/.build/modules/src/modules/firebase'
 
 export function firebaseAuthFactory() {
   return undefined
@@ -18,19 +18,11 @@ export function firebaseEnvironmentFactory() {
 }
 
 @NgModule({
-  imports: [
-    AngularFireModule
-  ],
+  imports: [AngularFireModule],
   providers: [
     { provide: FIREBASE_USER_AUTH_TOKEN, useFactory: firebaseAuthFactory },
-    {
-      provide: FirebaseNameOrConfigToken,
-      useValue: 'universal-webapp'
-    },
-    {
-      provide: FirebaseOptionsToken,
-      useFactory: firebaseEnvironmentFactory
-    }
+    { provide: FirebaseNameOrConfigToken, useValue: 'universal-webapp' },
+    { provide: FirebaseOptionsToken, useFactory: firebaseEnvironmentFactory }
   ]
 })
 export class FirebaseModule { }
