@@ -23,7 +23,7 @@ const expressApp = express()
 const dir = resolve(base, '.dist')
 const publicDir = `${dir}/public`
 
-isLocalDevelopmentServer && require('reload')(expressApp)
+require('reload')(expressApp)
 
 expressApp.use(cookieParser())
 

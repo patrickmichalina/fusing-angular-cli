@@ -1,7 +1,8 @@
 import { config as readDotEnv } from 'dotenv'
 
 export interface AppEnvironmentSettings {
-  readonly PORT: number
+  readonly PORT: string
+  readonly ENV: string
 }
 
 interface StringDictionary {

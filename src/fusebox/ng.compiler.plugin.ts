@@ -17,7 +17,11 @@ export class NgcPluginClass implements Plugin {
   constructor(private opts: NgcPluginOptions = defaults) {}
 
   bundleStart() {
-    this.opts.enabled && ngc(['-p', resolve('tsconfig.aot.json')])
+    this.opts.enabled &&
+      ngc(['-p', resolve('tsconfig.aot.json')], err => {
+        console.error(err)
+        process.exit(1)
+      })
   }
 }
 

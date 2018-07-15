@@ -60,6 +60,7 @@ function serve(isProdBuild = false) {
     .subscribe(config => {
       const cache = !isProdBuild
       const isAotBuild = isProdBuild
+      const isLocalDev = !isProdBuild
       const log = config.fusebox.verbose || false
       const homeDir = resolve('.')
       const serverOutput = resolve(config.fusebox.server.outputDir)
@@ -85,7 +86,6 @@ function serve(isProdBuild = false) {
           Ng2TemplatePlugin(),
           ['*.component.html', RawPlugin()],
           WebIndexPlugin({
-            title: 'test',
             bundles: ['app', 'vendor'],
             path: 'js',
             target: '../index.html',
@@ -93,7 +93,7 @@ function serve(isProdBuild = false) {
             engine: 'pug',
             locals: {
               pageTitle: 'FUSING ANGULAR',
-              isLocalDev: !isProdBuild
+              isLocalDev
             }
           }),
           NgProdPlugin({ enabled: isProdBuild }),
