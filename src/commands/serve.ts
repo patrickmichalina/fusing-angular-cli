@@ -20,7 +20,8 @@ import { main as ngc } from '@angular/compiler-cli/src/main'
 import { CompressionPlugin } from '../fusebox/compression.plugin'
 import { appEnvironmentVariables } from '../utilities/environment-variables'
 import { renderSassDir } from '../utilities/sass'
-import { exec } from 'child_process'
+import { exec, execSync } from 'child_process'
+import { NgSwPlugin } from '../fusebox/ng.sw.plugin'
 import clearTerminal from '../utilities/clear'
 import readConfig_ from '../utilities/read-config'
 
@@ -31,7 +32,7 @@ command(
     return args
   },
   args => {
-    serve(args.prod)
+    serve(args.prod, args.sw)
   }
 )
   .option('prod', {
@@ -51,7 +52,7 @@ function logServeCommandStart() {
   logInfo('Launching Serve Command')
 }
 
-function serve(isProdBuild = false) {
+function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
   readConfig_()
     .pipe(
       tap(logServeCommandStart),
@@ -83,6 +84,7 @@ function serve(isProdBuild = false) {
         useTypescriptCompiler: true,
         plugins: [
           isAotBuild && NgAotFactoryPlugin(),
+          isServiceWorkerEnabled && NgSwPlugin(),
           Ng2TemplatePlugin(),
           ['*.component.html', RawPlugin()],
           WebIndexPlugin({
@@ -157,11 +159,32 @@ function serve(isProdBuild = false) {
       // tslint:disable-next-line:no-let
       let prevServerProcess: FuseProcess
 
+      const fuseSw = FuseBox.init({
+        homeDir: resolve('node_modules/@angular/service-worker'),
+        output: `${browserOutput}/$name.js`,
+        target: 'browser@es5',
+        plugins: [
+          isProdBuild &&
+            QuantumPlugin({
+              warnings: false,
+              uglify: config.fusebox.browser.prod.uglify,
+              treeshake: config.fusebox.browser.prod.treeshake,
+              bakeApiIntoBundle: 'ngsw-worker'
+            }),
+          CompressionPlugin()
+        ] as any
+      })
+      fuseSw.bundle('ngsw-worker').instructions(' > [ngsw-worker.js]')
+
       fuseBrowser
         .bundle('vendor')
         .watch(watchDir)
         .instructions(` ~ ${browserModule}`)
         .completed(fn => {
+          isServiceWorkerEnabled &&
+            execSync(
+              `node_modules/.bin/ngsw-config .dist/public src/app/ngsw.json`
+            )
           fuseServer
             .bundle('server')
             .instructions(` > [${config.fusebox.server.serverModule}]`)
@@ -200,6 +223,8 @@ function serve(isProdBuild = false) {
         process.exit(1)
       })
 
-      fuseBrowser.run({ chokidar: { ignored: /^(.*\.scss$)*$/gim } })
+      fuseSw.run().then(() => {
+        fuseBrowser.run({ chokidar: { ignored: /^(.*\.scss$)*$/gim } })
+      })
     })
 }
