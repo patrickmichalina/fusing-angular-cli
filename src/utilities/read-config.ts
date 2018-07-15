@@ -42,6 +42,7 @@ export interface FusingAngularConfig {
   readonly favicon: FaviconConfig
   readonly fusebox: FuseBoxConfig
   readonly environment: EnvironmentConfig
+  readonly generatedMetaTags?: ReadonlyArray<string>
 }
 
 export default function readConfig_() {

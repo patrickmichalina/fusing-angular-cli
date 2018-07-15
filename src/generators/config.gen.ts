@@ -5,11 +5,18 @@ import { FUSEBOX_DEFAULTS as fusebox } from '../templates/fusebox'
 
 const configPath = 'fusing-angular.json'
 
-export default function generateFngConfig(path: string, overwrite = false) {
+export default function generateFngConfig(
+  path: string,
+  overwrite = false,
+  faviconOverride?: any
+) {
   return writeJsonFile_(
     resolve(path, configPath),
     {
-      favicon,
+      favicon: {
+        ...favicon,
+        ...faviconOverride
+      },
       fusebox
     },
     overwrite

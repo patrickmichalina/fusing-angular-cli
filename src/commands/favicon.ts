@@ -2,7 +2,7 @@ import { command } from 'yargs'
 import { logInfoWithBackground, logError } from '../utilities/log'
 import { flatMap, map, first, filter, tap } from 'rxjs/operators'
 import { rxFavicons } from '../utilities/rx-favicon'
-import { writeFile_, mkDirDeep_ } from '../utilities/rx-fs'
+import { writeFile_, mkDirDeep_, writeJsonFile_ } from '../utilities/rx-fs'
 import { resolve } from 'path'
 import { forkJoin } from 'rxjs'
 import readConfig_, {
@@ -52,8 +52,32 @@ interface configModel {
 }
 
 function mapResponsesToWriteableObservables(response: configModel) {
-  return response.result.images.map(file =>
-    writeFile_(resolve(`${response.config.output}/${file.name}`), file.contents)
+  return readConfig_().pipe(
+    flatMap(config => {
+      const _confg = {
+        ...config,
+        generatedMetaTags: response.result.html
+      }
+      return writeJsonFile_(resolve('fusing-angular.json'), _confg, true)
+    }),
+    flatMap(() => {
+      return forkJoin(
+        ...response.result.files.map(file =>
+          writeFile_(
+            resolve(`${response.config.output}/${file.name}`),
+            file.contents
+          )
+        )
+      )
+    }),
+    map(() => {
+      return response.result.images.map(file =>
+        writeFile_(
+          resolve(`${response.config.output}/${file.name}`),
+          file.contents
+        )
+      )
+    })
   )
 }
 

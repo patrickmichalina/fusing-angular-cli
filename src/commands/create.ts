@@ -316,6 +316,10 @@ function create(overwriteExisting = false) {
       flatMap(toEnsureProjectDirectoryExists, im => im),
       flatMap(im => {
         const path = resolve(im.config.fullname)
+        const faviOverrides = {
+          appName: im.config.fullname,
+          appShortName: im.config.shortname
+        }
         const firebaseConfig: FirebaseConfig | undefined = im.config.firebase
           ? {
               apiKey: im.config.firebaseApiKey,
@@ -340,7 +344,7 @@ function create(overwriteExisting = false) {
             im.config.googleAnalyticsTrackingId,
             im.config.googleSiteVerificationCode
           ),
-          generateFngConfig(path, overwriteExisting),
+          generateFngConfig(path, overwriteExisting, faviOverrides),
           generateTsConfig(path, overwriteExisting),
           generateTsDeclartionFile(path, overwriteExisting),
           im.config.ide

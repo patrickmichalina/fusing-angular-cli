@@ -16,7 +16,9 @@ function callback(config: FaviconConfig) {
 export function rxFavicons(config?: FaviconConfig) {
   const _config = {
     source: resolve('src/misc/logo.svg'),
-    configuration: {},
+    configuration: {
+      path: '/assets/favicons'
+    },
     ...config
   } as FaviconConfig
 

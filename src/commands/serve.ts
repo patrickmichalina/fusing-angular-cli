@@ -24,6 +24,7 @@ import { exec, execSync } from 'child_process'
 import { NgSwPlugin } from '../fusebox/ng.sw.plugin'
 import clearTerminal from '../utilities/clear'
 import readConfig_ from '../utilities/read-config'
+import { copy } from 'fs-extra'
 
 command(
   'serve [port][prod][aot][sw]',
@@ -95,7 +96,8 @@ function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
             engine: 'pug',
             locals: {
               pageTitle: 'FUSING ANGULAR',
-              isLocalDev
+              isLocalDev,
+              faviconMeta: (config.generatedMetaTags || []).join('\n')
             }
           }),
           NgProdPlugin({ enabled: isProdBuild }),
@@ -223,8 +225,10 @@ function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
         process.exit(1)
       })
 
-      fuseSw.run().then(() => {
-        fuseBrowser.run({ chokidar: { ignored: /^(.*\.scss$)*$/gim } })
-      })
+      copy(resolve('src/assets'), resolve('.dist/public/assets'))
+        .then(() => fuseSw.run())
+        .then(() => {
+          fuseBrowser.run({ chokidar: { ignored: /^(.*\.scss$)*$/gim } })
+        })
     })
 }
