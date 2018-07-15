@@ -8,7 +8,8 @@ import {
   RawPlugin,
   SassPlugin,
   EnvPlugin,
-  WebIndexPlugin
+  WebIndexPlugin,
+  UglifyJSPlugin
 } from 'fuse-box'
 import { resolve } from 'path'
 import { NgProdPlugin } from '../fusebox/ng.prod.plugin'
@@ -165,16 +166,7 @@ function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
         homeDir: resolve('node_modules/@angular/service-worker'),
         output: `${browserOutput}/$name.js`,
         target: 'browser@es5',
-        plugins: [
-          isProdBuild &&
-            QuantumPlugin({
-              warnings: false,
-              uglify: config.fusebox.browser.prod.uglify,
-              treeshake: config.fusebox.browser.prod.treeshake,
-              bakeApiIntoBundle: 'ngsw-worker'
-            }),
-          CompressionPlugin()
-        ] as any
+        plugins: [isProdBuild && UglifyJSPlugin(), CompressionPlugin()] as any
       })
       fuseSw.bundle('ngsw-worker').instructions(' > [ngsw-worker.js]')
 
