@@ -4,12 +4,14 @@ import { BrowserTransferStateModule, BrowserModule } from '@angular/platform-bro
 import { AppComponent } from '../app/app.component'
 import { EnvironmentBrowserModule } from 'fusing-angular-cli/.build/modules/src/modules/environment'
 import { WindowBrowserModule } from 'fusing-angular-cli/.build/modules/src/modules'
+import { CookiesBrowserModule } from 'fusing-angular-cli/.build/modules/src/modules/cookies'
 
 @NgModule({
   imports: [
     BrowserModule.withServerTransition({ appId: 'app-root' }),
     BrowserTransferStateModule,
     WindowBrowserModule.forRoot(),
+    CookiesBrowserModule,
     EnvironmentBrowserModule,
     AppModule
   ],

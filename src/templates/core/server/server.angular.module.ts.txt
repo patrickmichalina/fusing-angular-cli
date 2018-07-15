@@ -4,11 +4,13 @@ import { AppModule } from '../app/app.module'
 import { AppComponent } from '../app/app.component'
 import { WindowServerModule } from 'fusing-angular-cli/.build/modules/src/modules'
 import { EnvironmentServerModule } from 'fusing-angular-cli/.build/modules/src/modules/environment'
+import { CookiesServerModule } from 'fusing-angular-cli/.build/modules/src/modules/cookies'
 
 @NgModule({
   imports: [
     ServerTransferStateModule,
     WindowServerModule.forRoot({}),
+    CookiesServerModule,
     EnvironmentServerModule,
     ServerModule,
     AppModule
