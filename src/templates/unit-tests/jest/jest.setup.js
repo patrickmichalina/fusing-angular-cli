@@ -75,7 +75,6 @@ function wrapTestInZone(testBody) {
     env[methodName].skip = env['xdescribe']
   }
 })
-
 ;['xit', 'fit', 'test', 'it'].forEach(methodName => {
   const originaljestFn = env[methodName]
   env[methodName] = function(description, specDefinitions, timeout) {
@@ -87,7 +86,6 @@ function wrapTestInZone(testBody) {
     env[methodName].skip = env['xit']
   }
 })
-
 ;['beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach(methodName => {
   const originaljestFn = env[methodName]
   env[methodName] = function(specDefinitions, timeout) {
@@ -143,3 +141,4 @@ Object.defineProperty(document.body.style, 'transform', {
     }
   }
 })
+window.Hammer = require('hammerjs')

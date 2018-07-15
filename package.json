@@ -90,6 +90,7 @@
     "favicons": "^5.1.1",
     "firebase": "^5.2.0",
     "fuse-box": "^3.4.0",
+    "hammerjs": "^2.0.8",
     "iltorb": "^2.3.2",
     "inquirer": "^6.0.0",
     "jest": "23.3.0",
