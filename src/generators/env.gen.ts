@@ -17,13 +17,29 @@ FNG_FIREBASE_MESSAGING_SENDER_ID=${config.messagingSenderId}`
 export default function generateDotEnv(
   dir: string,
   overwrite = false,
-  firebaseConfig?: FirebaseConfig
+  firebaseConfig?: FirebaseConfig,
+  googleAnalyticsId?: string,
+  googleSiteVerificationCode?: string
 ) {
-  const final = firebaseConfig
+  const resolvedFirebase = firebaseConfig
     ? env.replace('$FIREBASE', firebaseEnvConfigMap(firebaseConfig))
-    : env
+    : env.replace('$FIREBASE', '')
+
+  const resolvedGoogleAnalytics = googleAnalyticsId
+    ? resolvedFirebase.replace(
+        '$GOOGLE_ANALYTICS',
+        `FNG_GOOGLE_ANALYTICS_TRACKING_ID=${googleAnalyticsId}`
+      )
+    : resolvedFirebase.replace('$GOOGLE_ANALYTICS', '')
+
+  const resolvedGoogleSite = googleSiteVerificationCode
+    ? resolvedGoogleAnalytics.replace(
+        '$GOOGLE_SITE_VERIFICATION',
+        `FNG_GOOGLE_SITE_VERIFICATION_CODE=${googleSiteVerificationCode}`
+      )
+    : resolvedGoogleAnalytics.replace('$GOOGLE_SITE_VERIFICATION', '')
 
   return overwrite
-    ? writeFile_(resolve(dir, configPath), final)
-    : writeFileSafely_(resolve(dir, configPath), final)
+    ? writeFile_(resolve(dir, configPath), resolvedGoogleSite)
+    : writeFileSafely_(resolve(dir, configPath), resolvedGoogleSite)
 }

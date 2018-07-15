@@ -22,6 +22,8 @@ export interface AnswersDictionary {
   readonly firebaseStorageBucket?: string
   readonly firebaseMesssagingSenderId?: string
   readonly firebaseModules?: ReadonlyArray<string>
+  readonly googleAnalyticsTrackingId?: string
+  readonly googleSiteVerificationCode?: string
 }
 
 export interface WorkingAnswersDictionary extends AnswersDictionary {

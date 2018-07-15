@@ -63,7 +63,7 @@ command(
 const Q_FULL_NAME: QuestionWrapper = {
   question: {
     name: 'fullname',
-    message: 'Application Full Name',
+    message: 'App Full Name:',
     default: 'fusing-angular-demo-app'
   },
   answerHandler: (
@@ -78,8 +78,36 @@ const Q_FULL_NAME: QuestionWrapper = {
 const Q_SHORT_NAME = {
   question: {
     name: 'shortname',
-    message: 'Application Short Name',
+    message: 'App Short Name:',
     default: 'fusing-ng'
+  },
+  answerHandler: (
+    response: QustionResponse,
+    current: WorkingAnswersDictionary,
+    stream: Subject<any>
+  ) => {
+    stream.next(Q_GOOGLE_ANALYTICS_TRACKING_ID.question)
+  }
+}
+
+const Q_GOOGLE_ANALYTICS_TRACKING_ID = {
+  question: {
+    name: 'googleAnalyticsTrackingId',
+    message: 'Google Analytics Tracking ID (Optional):'
+  },
+  answerHandler: (
+    response: QustionResponse,
+    current: WorkingAnswersDictionary,
+    stream: Subject<any>
+  ) => {
+    stream.next(Q_GOOGLE_SITE_VERIFICATION_CODE.question)
+  }
+}
+
+const Q_GOOGLE_SITE_VERIFICATION_CODE = {
+  question: {
+    name: 'googleSiteVerificationCode',
+    message: 'Google Site Verification Code (Optional):'
   },
   answerHandler: (
     response: QustionResponse,
@@ -107,21 +135,6 @@ const Q_IDE = {
   }
 }
 
-// const Q_APP_TYPE = {
-//   question: {
-//     type: 'confirm',
-//     name: 'isUniversalApp',
-//     message: 'Server rendered (Angular Universal)?'
-//   },
-//   answerHandler: (
-//     response: QustionResponse,
-//     current: WorkingAnswersDictionary,
-//     stream: Subject<any>
-//   ) => {
-//     stream.complete()
-//   }
-// }
-
 const Q_TEST_RUNNERS = {
   question: {
     type: 'list',
@@ -143,8 +156,9 @@ const QUESTION_DICT = [
   Q_SHORT_NAME,
   Q_TEST_RUNNERS,
   Q_IDE,
+  Q_GOOGLE_ANALYTICS_TRACKING_ID,
+  Q_GOOGLE_SITE_VERIFICATION_CODE,
   ...Q_FIREBASE
-  // Q_APP_TYPE
 ].reduce(
   (acc, curr) => {
     return { ...acc, [curr.question.name]: curr }
@@ -319,7 +333,13 @@ function create(overwriteExisting = false) {
           generateCoreAngular(im.config.fullname),
           generateGitIgnore(path, overwriteExisting),
           generateTsLint(path, overwriteExisting),
-          generateDotEnv(path, overwriteExisting, firebaseConfig),
+          generateDotEnv(
+            path,
+            overwriteExisting,
+            firebaseConfig,
+            im.config.googleAnalyticsTrackingId,
+            im.config.googleSiteVerificationCode
+          ),
           generateFngConfig(path, overwriteExisting),
           generateTsConfig(path, overwriteExisting),
           generateTsDeclartionFile(path, overwriteExisting),
