@@ -2,7 +2,6 @@ export const FAVICON_DEFAULTS = {
   source: 'src/app/favicon.svg',
   output: 'src/assets/favicons',
   config: {
-    path: '/',
     appName: null,
     appDescription: null,
     developerName: null,

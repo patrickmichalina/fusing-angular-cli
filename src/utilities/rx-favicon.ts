@@ -15,12 +15,13 @@ function callback(config: FaviconConfig) {
 
 export function rxFavicons(config?: FaviconConfig) {
   const _config = {
-    source: resolve('src/misc/logo.svg'),
+    source:
+      (config && resolve(config.source)) || resolve('src/app/favicon.svg'),
     configuration: {
-      path: '/assets/favicons'
-    },
-    ...config
-  } as FaviconConfig
+      path: '/assets/favicons',
+      ...(config && config.config)
+    }
+  } as any
 
   return bindCallback(favs as any, callback(_config))(
     _config.source,

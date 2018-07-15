@@ -7,7 +7,7 @@ const configPath = 'fusing-angular.json'
 export interface FaviconConfig {
   readonly source: string
   readonly output: string
-  readonly configuration: favs.Configuration
+  readonly config: favs.Configuration
 }
 
 export interface FuseBoxBaseConfig {
