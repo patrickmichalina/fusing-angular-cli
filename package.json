@@ -70,7 +70,7 @@
     "@angular/platform-server": "^6.1.0-rc.0",
     "@angular/router": "^6.1.0-rc.0",
     "@angular/service-worker": "^6.1.0-rc.0",
-    "@nguniversal/common": "^6.1.0-rc.0",
+    "@nguniversal/common": "^6.0.0",
     "@nguniversal/express-engine": "^6.0.0",
     "@types/cookie-parser": "^1.4.1",
     "@types/express": "^4.16.0",
