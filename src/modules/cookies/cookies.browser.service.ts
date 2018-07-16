@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Subject } from 'rxjs'
-import { CookieAttributes, getJSON, remove, set } from 'js-cookie'
 import { ICookieService, StringDict } from './common'
+import { CookieAttributes, getJSON, remove, set } from 'js-cookie'
 
 // tslint:disable:no-this
 // tslint:disable-next-line:no-class
