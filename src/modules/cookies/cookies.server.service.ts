@@ -9,6 +9,7 @@ import * as express from 'express'
 // tslint:disable-next-line:no-class
 @Injectable()
 export class ServerCookieService implements ICookieService {
+  public readonly valueChange = empty()
   public readonly valueChanges = empty()
 
   constructor(@Inject(REQUEST) private req: express.Request) {}

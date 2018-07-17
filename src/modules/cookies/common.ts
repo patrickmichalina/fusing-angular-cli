@@ -1,7 +1,13 @@
 import { Observable } from 'rxjs'
 import { CookieAttributes } from 'js-cookie'
 
+export interface KeyValue {
+  readonly key: string
+  readonly value: any
+}
+
 export interface ICookieService {
+  readonly valueChange: Observable<KeyValue>
   readonly valueChanges: Observable<StringDict>
   readonly getAll: () => any
   readonly get: (name: string) => any

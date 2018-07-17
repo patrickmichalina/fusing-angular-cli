@@ -1,13 +1,8 @@
 import { Injectable } from '@angular/core'
 import { Subject } from 'rxjs'
-import { ICookieService, StringDict } from './common'
+import { ICookieService, StringDict, KeyValue } from './common'
 import { CookieAttributes, getJSON, remove, set } from 'js-cookie'
 import { filter } from 'rxjs/operators'
-
-export interface KeyValue {
-  readonly key: string
-  readonly value: any
-}
 
 // tslint:disable:no-this
 // tslint:disable-next-line:no-class
