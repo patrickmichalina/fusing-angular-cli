@@ -19,7 +19,7 @@ function repairInlinePem(str?: string) {
 }
 
 export function fbAdminFactory(es: EnvironmentService) {
-  !firebaseAdminAppAlreadyExists &&
+  !firebaseAdminAppAlreadyExists() &&
     initializeApp({
       credential: credential.cert({
         projectId: es.config.FIREBASE_PROJECT_ID,
