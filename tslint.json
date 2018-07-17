@@ -2,7 +2,7 @@
   "extends": ["tslint-immutable"],
   "rules": {
     "newline-per-chained-call": false,
-    "no-unused-variable": true,
+    "no-unused-variable": false,
     "prefer-object-spread": true,
     "no-var-keyword": true,
     "no-parameter-reassignment": true,
