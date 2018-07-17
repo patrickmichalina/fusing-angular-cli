@@ -25,14 +25,13 @@ function cacheToBrowser(ts: TransferState) {
 
 function toPsuedoUserObject(jwtObj: any) {
   return {
-    isAnonymous: false, // TODO
-    uid: jwtObj.uid,
+    isAnonymous: jwtObj.provider_id && jwtObj.provider_id === 'anonymous',
+    uid: jwtObj.user_id,
     displayName: jwtObj.name,
     email: jwtObj.email,
     emailVerified: jwtObj.email_verified,
     photoURL: jwtObj.picture,
     phoneNumber: jwtObj.phone_number,
-    // providerData: '',
     providerId: jwtObj.firebase && jwtObj.firebase.sign_in_provider
   }
 }
