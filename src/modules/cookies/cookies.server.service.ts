@@ -1,7 +1,6 @@
 import { empty } from 'rxjs'
 import { REQUEST } from '@nguniversal/express-engine/tokens'
 import { Inject, Injectable } from '@angular/core'
-import { CookieAttributes } from 'js-cookie'
 import { ICookieService } from './common'
 import * as express from 'express'
 
@@ -13,6 +12,10 @@ export class ServerCookieService implements ICookieService {
   public readonly valueChanges = empty()
 
   constructor(@Inject(REQUEST) private req: express.Request) {}
+
+  targetValueChange() {
+    return empty()
+  }
 
   public get(name: string): any {
     try {
@@ -26,11 +29,11 @@ export class ServerCookieService implements ICookieService {
     return this.req && this.req.cookies
   }
 
-  public set(name: string, value: any, opts?: CookieAttributes): void {
+  public set(): void {
     // noop
   }
 
-  public remove(name: string, opts?: CookieAttributes): void {
+  public remove(): void {
     // noop
   }
 
