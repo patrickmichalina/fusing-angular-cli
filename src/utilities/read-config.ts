@@ -1,6 +1,7 @@
-import { map, catchError } from 'rxjs/operators'
+import { map, catchError, tap } from 'rxjs/operators'
 import { readFile_ } from './rx-fs'
 import * as favs from 'favicons'
+import { resolve } from 'path'
 
 const configPath = 'fusing-angular.json'
 
@@ -45,8 +46,8 @@ export interface FusingAngularConfig {
   readonly generatedMetaTags?: ReadonlyArray<string>
 }
 
-export default function readConfig_() {
-  return readFile_(configPath).pipe(
+export default function readConfig_(basePath = '') {
+  return readFile_(resolve(basePath, configPath)).pipe(
     map<Buffer, any>(file => JSON.parse(file.toString())),
     map<any, FusingAngularConfig>(obj => obj), // TODO: add validation handler here
     catchError(err => {

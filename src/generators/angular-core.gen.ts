@@ -5,7 +5,8 @@ import {
   appSharedModuleTemplate,
   appComponentCssTemplate,
   appComponentHtmlTemplate,
-  appIndex
+  appIndex,
+  favicon
 } from '../templates/core/app'
 import { writeFile_, mkDirAndContinueIfExists_ } from '../utilities/rx-fs'
 import { forkJoin } from 'rxjs'
@@ -21,12 +22,14 @@ import {
   serverModuleTemplate,
   serverAppTemplate
 } from '../templates/core/server'
+import { robots } from '../templates/core/assets'
 
 export function generateCoreAngular(projectDir: string) {
   return forkJoin([
     generateCoreAngularApp(projectDir),
     generateCoreAngularBrowser(projectDir),
-    generateCoreAngularServer(projectDir)
+    generateCoreAngularServer(projectDir),
+    generateCoreAngularAssets(projectDir)
   ])
 }
 
@@ -59,21 +62,22 @@ export function generateCoreAngularApp(projectDir: string, universal = true) {
         writeFile_(`${baseDir}/app.component.ts`, appComponentTemplate),
         writeFile_(`${baseDir}/app.component.scss`, appComponentCssTemplate), // TODO: write component generator function instead
         writeFile_(`${baseDir}/app.component.html`, appComponentHtmlTemplate),
-        writeFile_(`${baseDir}/index.pug`, appIndex)
+        writeFile_(`${baseDir}/index.pug`, appIndex),
+        writeFile_(`${baseDir}/favicon.svg`, favicon)
       ])
-    ),
-    flatMap(() =>
-      mkDirAndContinueIfExists_(resolve(baseDir, 'home')).pipe(
-        flatMap(() =>
-          forkJoin([
-            // writeFile_(
-            //   `${baseDir}/home/home.component.ts`,
-            //   homeComponentTemplate
-            // )
-          ])
-        )
-      )
     )
+    // flatMap(() =>
+    //   mkDirAndContinueIfExists_(resolve(baseDir, 'home')).pipe(
+    //     flatMap(() =>
+    //       forkJoin([
+    //         // writeFile_(
+    //         //   `${baseDir}/home/home.component.ts`,
+    //         //   homeComponentTemplate
+    //         // )
+    //       ])
+    //     )
+    //   )
+    // )
   )
 }
 
@@ -110,5 +114,14 @@ export function generateCoreAngularServer(projectDir: string) {
         writeFile_(`${baseDir}/server.ts`, serverTemplate)
       ])
     )
+  )
+}
+
+export function generateCoreAngularAssets(projectDir: string) {
+  const root = resolve(`${projectDir}/src`)
+  const baseDir = resolve(root, 'assets')
+  return mkDirAndContinueIfExists_(root).pipe(
+    flatMap(() => mkDirAndContinueIfExists_(baseDir)),
+    flatMap(() => forkJoin([writeFile_(`${baseDir}/robots.txt`, robots)]))
   )
 }

@@ -13,18 +13,20 @@ function callback(config: FaviconConfig) {
   }
 }
 
-export function rxFavicons(config?: FaviconConfig) {
-  const _config = {
-    source:
-      (config && resolve(config.source)) || resolve('src/app/favicon.svg'),
-    configuration: {
-      path: '/assets/favicons',
-      ...(config && config.config)
-    }
-  } as any
-
-  return bindCallback(favs as any, callback(_config))(
-    _config.source,
-    _config.configuration
-  ) as Observable<favs.FavIconResponse>
+export function rxFavicons(baseDir = '.') {
+  return function(config?: FaviconConfig) {
+    const _config = {
+      source:
+        (config && resolve(baseDir, config.source)) ||
+        resolve(baseDir, 'src/app/favicon.svg'),
+      configuration: {
+        path: '/assets/favicons',
+        ...(config && config.config)
+      }
+    } as any
+    return bindCallback(favs as any, callback(_config))(
+      _config.source,
+      _config.configuration
+    ) as Observable<favs.FavIconResponse>
+  }
 }

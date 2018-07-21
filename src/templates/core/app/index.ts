@@ -6,6 +6,7 @@ import * as appComponentCssTemplate from './app.component.scss.txt'
 import * as appComponentHtmlTemplate from './app.component.html.txt'
 import * as homeComponentTemplate from './home.component.ts.txt'
 import * as appIndex from './index.pug.txt'
+import * as favicon from './favicon.svg.txt'
 
 export {
   appModuleTemplate,
@@ -15,5 +16,6 @@ export {
   homeComponentTemplate,
   appComponentCssTemplate,
   appComponentHtmlTemplate,
-  appIndex
+  appIndex,
+  favicon
 }

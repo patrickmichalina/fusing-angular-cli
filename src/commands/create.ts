@@ -46,6 +46,7 @@ import {
   FirebaseConfig
 } from './create-common'
 import { Q_INCLUDE_FIREBASE, Q_FIREBASE } from './create-firebase'
+import { favicon_ } from './favicon'
 
 command(
   'create [overwrite]',
@@ -330,33 +331,42 @@ function create(overwriteExisting = false) {
               storageBucket: im.config.firebaseStorageBucket
             }
           : undefined
-        return forkJoin([
-          genNpmPackageJson(im.config.fullname, true, overwriteExisting).pipe(
-            flatMap(test(im.config.fullname))
+        return generateFngConfig(path, overwriteExisting, faviOverrides).pipe(
+          flatMap(() =>
+            forkJoin([
+              generateCoreAngular(im.config.fullname),
+              generateGitIgnore(path, overwriteExisting),
+              generateTsLint(path, overwriteExisting),
+              generateDotEnv(
+                path,
+                overwriteExisting,
+                firebaseConfig,
+                im.config.googleAnalyticsTrackingId,
+                im.config.googleSiteVerificationCode
+              ),
+              generateTsConfig(path, overwriteExisting),
+              generateTsDeclartionFile(path, overwriteExisting),
+              genNpmPackageJson(im.config.fullname, true, overwriteExisting),
+              im.config.ide
+                ? generateIdeStubs(im.config.ide, path, overwriteExisting)
+                : of(undefined)
+            ])
           ),
-          generateCoreAngular(im.config.fullname),
-          generateGitIgnore(path, overwriteExisting),
-          generateTsLint(path, overwriteExisting),
-          generateDotEnv(
-            path,
-            overwriteExisting,
-            firebaseConfig,
-            im.config.googleAnalyticsTrackingId,
-            im.config.googleSiteVerificationCode
-          ),
-          generateFngConfig(path, overwriteExisting, faviOverrides),
-          generateTsConfig(path, overwriteExisting),
-          generateTsDeclartionFile(path, overwriteExisting),
-          im.config.ide
-            ? generateIdeStubs(im.config.ide, path, overwriteExisting)
-            : of(undefined)
-        ])
+          flatMap(() => favicon_(path)),
+          flatMap(test(im.config.fullname))
+        )
       }, im => im),
       take(1)
     )
-    .subscribe(res => {
-      // noop
-    }, process.exit)
+    .subscribe(
+      res => {
+        // noop
+      },
+      err => {
+        console.error(err)
+        process.exit(1)
+      }
+    )
 
   // prompt([
   //   // {
