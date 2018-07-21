@@ -6,7 +6,8 @@ import {
   appComponentCssTemplate,
   appComponentHtmlTemplate,
   appIndex,
-  favicon
+  favicon,
+  ngsw
 } from '../templates/core/app'
 import { writeFile_, mkDirAndContinueIfExists_ } from '../utilities/rx-fs'
 import { forkJoin } from 'rxjs'
@@ -63,21 +64,10 @@ export function generateCoreAngularApp(projectDir: string, universal = true) {
         writeFile_(`${baseDir}/app.component.scss`, appComponentCssTemplate), // TODO: write component generator function instead
         writeFile_(`${baseDir}/app.component.html`, appComponentHtmlTemplate),
         writeFile_(`${baseDir}/index.pug`, appIndex),
-        writeFile_(`${baseDir}/favicon.svg`, favicon)
+        writeFile_(`${baseDir}/favicon.svg`, favicon),
+        writeFile_(`${baseDir}/ngsw.json`, ngsw)
       ])
     )
-    // flatMap(() =>
-    //   mkDirAndContinueIfExists_(resolve(baseDir, 'home')).pipe(
-    //     flatMap(() =>
-    //       forkJoin([
-    //         // writeFile_(
-    //         //   `${baseDir}/home/home.component.ts`,
-    //         //   homeComponentTemplate
-    //         // )
-    //       ])
-    //     )
-    //   )
-    // )
   )
 }
 

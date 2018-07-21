@@ -7,6 +7,7 @@ import * as appComponentHtmlTemplate from './app.component.html.txt'
 import * as homeComponentTemplate from './home.component.ts.txt'
 import * as appIndex from './index.pug.txt'
 import * as favicon from './favicon.svg.txt'
+import * as ngsw from './ngsw.json.txt'
 
 export {
   appModuleTemplate,
@@ -17,5 +18,6 @@ export {
   appComponentCssTemplate,
   appComponentHtmlTemplate,
   appIndex,
-  favicon
+  favicon,
+  ngsw
 }

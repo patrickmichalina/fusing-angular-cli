@@ -1,11 +1,12 @@
 import * as express from 'express'
 import * as cookieParser from 'cookie-parser'
+import * as lru from 'lru-cache'
 import { resolve } from 'path'
 import { ngExpressEngine } from '@nguniversal/express-engine'
 import { AppServerModule } from './server.angular.module'
 import { stat, createReadStream } from 'fs'
 import { LRU_CACHE } from 'fusing-angular-cli/.build/modules/src/modules/firebase'
-import * as lru from 'lru-cache'
+const ms = require('ms')
 
 const environment = JSON.parse(process.env.FUSING_ANGULAR || '{}')
 const isLocalDevelopmentServer = environment.ENV === 'dev'
@@ -24,6 +25,28 @@ const dir = resolve(base, '.dist')
 const publicDir = `${dir}/public`
 
 require('reload')(expressApp)
+
+function seconds(time: string) {
+  return ms(time) / 1000
+}
+
+function staticCacheOptionsGen(time: string, disableCacheForLocalDev = true) {
+  return {
+    index: false,
+    setHeaders: (res: express.Response) => {
+      res.setHeader(
+        'Expires',
+        disableCacheForLocalDev
+          ? new Date(Date.now() + seconds(time)).toUTCString()
+          : new Date(Date.now()).toUTCString()
+      )
+      res.setHeader(
+        'Cache-Control',
+        disableCacheForLocalDev ? 'max-age=0' : `max-age=${seconds(time)}`
+      )
+    }
+  }
+}
 
 expressApp.use(cookieParser())
 
@@ -53,7 +76,10 @@ function writeJsHeaders(res: express.Response, contentLength: number, type: stri
   res.writeHead(200, {
     "Content-Type": "application/javascript",
     "Content-Encoding": type,
-    "Content-Length": contentLength
+    "Content-Length": contentLength,
+    "Cache-Control": isLocalDevelopmentServer
+      ? "public, no-cache"
+      : `public, max-age=${seconds('180d')}, s-maxage=${seconds('180d')}`
   })
 }
 
@@ -72,11 +98,11 @@ function checkReturnJsFile(filePath: string, res: express.Response, encoding: st
   })
 }
 
-expressApp.use('/robots.txt', express.static(`${publicDir}/assets/robots.txt`))
-expressApp.use('/assets', express.static(`${publicDir}/assets`))
-expressApp.use('/favicon.ico', express.static(`${publicDir}/assets/favicons/favicon.ico`))
-expressApp.use('/manifest.json', express.static(`${publicDir}/assets/favicons/manifest.json`))
-expressApp.use('/js/ngsw.json', express.static(`${publicDir}/ngsw.json`))
+expressApp.use('/robots.txt', express.static(`${publicDir}/assets/robots.txt`, staticCacheOptionsGen('30d')))
+expressApp.use('/assets', express.static(`${publicDir}/assets`, staticCacheOptionsGen('30d')))
+expressApp.use('/favicon.ico', express.static(`${publicDir}/assets/favicons/favicon.ico`, staticCacheOptionsGen('30d')))
+expressApp.use('/manifest.json', express.static(`${publicDir}/assets/favicons/manifest.json`, staticCacheOptionsGen('30d')))
+expressApp.use('/js/ngsw.json', express.static(`${publicDir}/ngsw.json`, staticCacheOptionsGen('30d')))
 
 expressApp.get('/js/**', (req, res) => {
   const encodings = (req.get('Accept-Encoding') || '').split(',').map(a => a.trim())
