@@ -15,7 +15,10 @@ export default function generateFngConfig(
     {
       favicon: {
         ...favicon,
-        ...faviconOverride
+        config: {
+          ...favicon.config,
+          ...faviconOverride
+        }
       },
       fusebox
     },
