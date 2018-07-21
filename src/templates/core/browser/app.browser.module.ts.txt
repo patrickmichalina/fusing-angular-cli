@@ -2,17 +2,13 @@ import { AppModule } from '../app/app.module'
 import { NgModule } from '@angular/core'
 import { BrowserTransferStateModule, BrowserModule } from '@angular/platform-browser'
 import { AppComponent } from '../app/app.component'
-import { EnvironmentBrowserModule } from 'fusing-angular-cli/.build/modules/src/modules/environment'
-import { WindowBrowserModule } from 'fusing-angular-cli/.build/modules/src/modules'
-import { CookiesBrowserModule } from 'fusing-angular-cli/.build/modules/src/modules/cookies'
+import { FusingAngularBrowserModule } from 'fusing-angular-cli/.build/modules/src/modules/fusing-angular/browser'
 
 @NgModule({
   imports: [
     BrowserModule.withServerTransition({ appId: 'app-root' }),
     BrowserTransferStateModule,
-    WindowBrowserModule.forRoot(),
-    CookiesBrowserModule,
-    EnvironmentBrowserModule,
+    FusingAngularBrowserModule,
     AppModule
   ],
   bootstrap: [AppComponent]

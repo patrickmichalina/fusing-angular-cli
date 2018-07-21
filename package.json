@@ -43,7 +43,7 @@
     "@types/node-sass": "^3.10.32",
     "@types/npm": "^2.0.29",
     "@types/ua-parser-js": "^0.7.32",
-    "@types/yargs": "^11.1.0",
+    "@types/yargs": "^11.1.1",
     "chokidar-cli": "^1.2.0",
     "condition-circle": "^2.0.1",
     "fuse-test-runner": "^1.0.16",

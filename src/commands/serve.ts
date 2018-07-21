@@ -222,5 +222,10 @@ function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
         .then(() => {
           fuseBrowser.run({ chokidar: { ignored: /^(.*\.scss$)*$/gim } })
         })
+        .catch(() => {
+          fuseSw.run().then(() => {
+            fuseBrowser.run({ chokidar: { ignored: /^(.*\.scss$)*$/gim } })
+          })
+        })
     })
 }

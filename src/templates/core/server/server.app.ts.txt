@@ -41,8 +41,6 @@ expressApp.engine('html', ngExpressEngine({
   ]
 }))
 
-expressApp.use('/favicon.ico', (req, res) => res.sendStatus(204)) // TODO: FAVICONS
-
 function returnBrEncoding(availableEncodings: string[]) {
   return availableEncodings.some(a => a === 'br')
 }
@@ -74,7 +72,13 @@ function checkReturnJsFile(filePath: string, res: express.Response, encoding: st
   })
 }
 
-expressApp.get('/js**', (req, res) => {
+expressApp.use('/robots.txt', express.static(`${publicDir}/assets/robots.txt`))
+expressApp.use('/assets', express.static(`${publicDir}/assets`))
+expressApp.use('/favicon.ico', express.static(`${publicDir}/assets/favicons/favicon.ico`))
+expressApp.use('/manifest.json', express.static(`${publicDir}/assets/favicons/manifest.json`))
+expressApp.use('/js/ngsw.json', express.static(`${publicDir}/ngsw.json`))
+
+expressApp.get('/js/**', (req, res) => {
   const encodings = (req.get('Accept-Encoding') || '').split(',').map(a => a.trim())
   const filePath = resolve(`${publicDir}${req.path}`)
 
@@ -95,36 +99,5 @@ expressApp.get('**', (req, res) => {
     res
   })
 })
-
-// app.use('/ngsw.json', express.static(`${dir}/ngsw.json`, staticOptions))
-// app.use(
-//   '/ngsw-worker.js',
-//   express.static(`${dir}/ngsw-worker.js`, staticOptions)
-// )
-// app.use(
-//   '/assets',
-//   express.static(`${dir}/assets`, { ...staticOptions, fallthrough: false })
-// )
-// app.use(
-//   '/manifest.json',
-//   express.static(`${dir}/assets`, { ...staticOptions, fallthrough: false })
-// )
-
-// app.use('/robots.txt', express.static(`${dir}/web/robots.txt`, staticOptions))
-// app.use('/ping.html', express.static(`${dir}/web/ping.html`, staticOptions))
-// app.use(
-//   '/favicon.ico',
-//   express.static(`${dir}/assets/favicons/favicon-16x16.png`, {
-//     ...staticOptions,
-//     fallthrough: false
-//   })
-// )
-// app.use(
-//   '/assets/favicons/favicon.ico',
-//   express.static(`${dir}/assets/favicons/favicon-16x16.png`, {
-//     ...staticOptions,
-//     fallthrough: false
-//   })
-// )
 
 export { expressApp }
