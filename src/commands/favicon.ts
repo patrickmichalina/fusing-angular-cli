@@ -4,7 +4,6 @@ import { flatMap, map, filter, tap, take, first } from 'rxjs/operators'
 import { rxFavicons } from '../utilities/rx-favicon'
 import {
   writeFile_,
-  mkDirDeep_,
   writeJsonFile_,
   mkDirAndContinueIfExists_
 } from '../utilities/rx-fs'

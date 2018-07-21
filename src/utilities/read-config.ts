@@ -1,4 +1,4 @@
-import { map, catchError, tap } from 'rxjs/operators'
+import { map, catchError } from 'rxjs/operators'
 import { readFile_ } from './rx-fs'
 import * as favs from 'favicons'
 import { resolve } from 'path'

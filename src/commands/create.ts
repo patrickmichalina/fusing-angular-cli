@@ -332,9 +332,10 @@ function create(overwriteExisting = false) {
             }
           : undefined
         return generateFngConfig(path, overwriteExisting, faviOverrides).pipe(
+          flatMap(() => generateCoreAngular(im.config.fullname)),
           flatMap(() =>
             forkJoin([
-              generateCoreAngular(im.config.fullname),
+              favicon_(path),
               generateGitIgnore(path, overwriteExisting),
               generateTsLint(path, overwriteExisting),
               generateDotEnv(
@@ -346,14 +347,16 @@ function create(overwriteExisting = false) {
               ),
               generateTsConfig(path, overwriteExisting),
               generateTsDeclartionFile(path, overwriteExisting),
-              genNpmPackageJson(im.config.fullname, true, overwriteExisting),
+              genNpmPackageJson(
+                im.config.fullname,
+                true,
+                overwriteExisting
+              ).pipe(flatMap(test(im.config.fullname))),
               im.config.ide
                 ? generateIdeStubs(im.config.ide, path, overwriteExisting)
                 : of(undefined)
             ])
-          ),
-          flatMap(() => favicon_(path)),
-          flatMap(test(im.config.fullname))
+          )
         )
       }, im => im),
       take(1)
