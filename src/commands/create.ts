@@ -363,7 +363,10 @@ function create(overwriteExisting = false) {
     )
     .subscribe(
       res => {
-        // noop
+        require('simple-git')()
+          .init()
+          .add('./*')
+          .commit('init')
       },
       err => {
         console.error(err)
