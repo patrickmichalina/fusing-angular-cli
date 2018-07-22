@@ -1,0 +1,44 @@
+import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { APP_BASE_HREF } from '@angular/common'
+import { Component } from '@angular/core'
+import { AppBrowserModule } from '../browser/app.browser.module'
+import { RouterModule } from '../../node_modules/@angular/router'
+import { AppComponent } from './app.component'
+
+@Component({
+  selector: 'test-cmp',
+  template: '<app-root></app-root>'
+})
+class TestComponent { }
+
+describe('App component', () => {
+  let fixture: ComponentFixture<TestComponent>
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        AppBrowserModule,
+        RouterModule.forRoot([
+          { path: '', component: AppComponent }
+        ])
+      ],
+      declarations: [TestComponent],
+      providers: [
+        { provide: APP_BASE_HREF, useValue: '/' }
+      ]
+    }).compileComponents()
+  }))
+
+  beforeEach(async(() => {
+    fixture = TestBed.createComponent(TestComponent)
+  }))
+
+  afterEach(async(() => {
+    TestBed.resetTestingModule()
+  }))
+
+  it('should build without a problem', async(() => {
+    expect(fixture.nativeElement).toBeTruthy()
+    expect(fixture.nativeElement).toMatchSnapshot()
+  }))
+})
