@@ -1,13 +1,13 @@
 import { Injectable, Inject } from '@angular/core'
 import {
   FIREBASE_AUTH_SERVER_ADMIN_APP,
-  FIREBASE_AUTH_SERVER_USER_JWT,
-  FIREBASE_AUTH_OBJ_TS
+  FIREBASE_AUTH_SERVER_USER_JWT
 } from './server.common'
 import { auth } from 'firebase-admin'
 import { of } from 'rxjs'
 import { flatMap, catchError, map, tap } from 'rxjs/operators'
 import { TransferState } from '@angular/platform-browser'
+import { FIREBASE_AUTH_OBJ_TS } from './tokens'
 
 function validateToken(auth: auth.Auth, jwt: string) {
   return of(auth.verifyIdToken(jwt))

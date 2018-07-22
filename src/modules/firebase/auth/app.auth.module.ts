@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core'
 import { AngularFireAuthModule } from 'angularfire2/auth'
+import { CookieService } from '../../cookies/browser'
+import { FirebaseUniversalAuthService } from './browser.auth.service'
 import {
   FIREBASE_AUTH_COOKIE_STO_KEY,
   FIREBASE_AUTH_COOKIE_FACTORY
 } from './tokens'
-import { CookieService } from '../../cookies/browser'
 
 // tslint:disable:no-this
 // tslint:disable-next-line:no-class
@@ -12,6 +13,7 @@ import { CookieService } from '../../cookies/browser'
   imports: [AngularFireAuthModule],
   exports: [AngularFireAuthModule],
   providers: [
+    FirebaseUniversalAuthService,
     { provide: FIREBASE_AUTH_COOKIE_FACTORY, useClass: CookieService },
     { provide: FIREBASE_AUTH_COOKIE_STO_KEY, useValue: 'firebaseJWT' }
   ]
