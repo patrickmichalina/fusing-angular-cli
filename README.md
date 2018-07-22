@@ -32,7 +32,7 @@ The CLI has dependencies that require Node 10.0.0 or higher, together with NPM 6
 - [x] Lazy Loaded modules
 - [ ] Route, Component, Directive, and Service generators
 - [x] Fully optimized production builds (brotli: ~125 kb, gzip: ~150 kb)
-- [ ] Favicon generator
+- [c] Easy favicon generator
 - [x] Check code quality with built in Linter
 - [x] Visual Studio Code integration
 - [ ] Circle CI support
