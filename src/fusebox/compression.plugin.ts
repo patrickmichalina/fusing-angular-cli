@@ -44,7 +44,7 @@ export class CompressionPluginClass implements Plugin {
             `${bundleOutput.dir}/${bundleOutput.filename}.js`
           ).pipe(
             flatMap(file => {
-              return forkJoin(
+              return forkJoin([
                 gzip_(file, { level: 9 }).pipe(
                   flatMap(compressed =>
                     bundleOutput.writeToOutputFolder(
@@ -61,7 +61,7 @@ export class CompressionPluginClass implements Plugin {
                     )
                   )
                 )
-              )
+              ])
             })
           )
         })
