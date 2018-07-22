@@ -1,17 +1,23 @@
 import { command } from 'yargs'
 import { logInfo } from '../utilities/log'
+import { serve } from './serve'
 
 command(
-  'build',
+  'build [prod][sw]',
   'build your application',
   args => {
     return args
   },
   args => {
-    build()
+    logInfo('Launching Init Command')
+    serve(args.prod, args.sw, true)
   }
 )
-
-function build() {
-  logInfo('Launching Init Command')
-}
+  .option('prod', {
+    default: false,
+    description: 'Run with optimizations enabled'
+  })
+  .option('sw', {
+    default: false,
+    description: 'Enable service-worker'
+  })

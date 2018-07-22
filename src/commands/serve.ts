@@ -28,7 +28,7 @@ import clearTerminal from '../utilities/clear'
 import readConfig_ from '../utilities/read-config'
 
 command(
-  'serve [port][prod][aot][sw]',
+  'serve [port][prod][sw]',
   'serve your application',
   args => {
     return args
@@ -54,7 +54,11 @@ function logServeCommandStart() {
   logInfo('Launching Serve Command')
 }
 
-function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
+export function serve(
+  isProdBuild = false,
+  isServiceWorkerEnabled = false,
+  buildOnly = false
+) {
   readConfig_()
     .pipe(
       tap(logServeCommandStart),
@@ -175,30 +179,32 @@ function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
       })
       fuseSw.bundle('ngsw-worker').instructions(' > [ngsw-worker.js]')
 
-      fuseBrowser
-        .bundle('vendor')
-        .watch(watchDir)
-        .instructions(` ~ ${browserModule}`)
-        .completed(fn => {
-          isServiceWorkerEnabled &&
-            execSync(
-              `node_modules/.bin/ngsw-config .dist/public src/app/ngsw.json`
-            )
-          fuseServer
-            .bundle('server')
-            .instructions(` > [${config.fusebox.server.serverModule}]`)
-            .completed(proc => {
-              prevServerProcess && prevServerProcess.kill()
-              clearTerminal()
-              proc.start()
-              prevServerProcess = proc
-            })
-          fuseServer.run()
-        })
+      // tslint:disable:no-if-statement
+      const vendor = fuseBrowser.bundle('vendor')
+      if (!buildOnly) vendor.watch(watchDir)
+      vendor.instructions(` ~ ${browserModule}`).completed(fn => {
+        isServiceWorkerEnabled &&
+          execSync(
+            `node_modules/.bin/ngsw-config .dist/public src/app/ngsw.json`
+          )
+        const serverBundle = fuseServer
+          .bundle('server')
+          .instructions(` > [${config.fusebox.server.serverModule}]`)
 
-      fuseBrowser
-        .bundle('app')
-        .watch(watchDir)
+        if (!buildOnly) {
+          serverBundle.completed(proc => {
+            prevServerProcess && prevServerProcess.kill()
+            clearTerminal()
+            proc.start()
+            prevServerProcess = proc
+          })
+        }
+        fuseServer.run()
+      })
+
+      const appBundle = fuseBrowser.bundle('app')
+      if (!buildOnly) appBundle.watch(watchDir)
+      appBundle
         .instructions(` !> [${browserModule}]`)
         .splitConfig({ dest: '../js/modules' })
 
@@ -206,21 +212,23 @@ function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
 
       renderSassDir()
 
-      const sass = exec(
-        'node_modules/.bin/node-sass --watch src/**/*.scss --output-style compressed --output src/**'
-      )
-      sass.on('error', err => {
-        console.log(err)
-        process.exit(1)
-      })
-      sass.on('message', err => {
-        console.error(err)
-        process.exit(1)
-      })
-      sass.stderr.on('data', err => {
-        console.log(err)
-        process.exit(1)
-      })
+      if (!buildOnly) {
+        const sass = exec(
+          'node_modules/.bin/node-sass --watch src/**/*.scss --output-style compressed --output src/**'
+        )
+        sass.on('error', err => {
+          console.log(err)
+          process.exit(1)
+        })
+        sass.on('message', err => {
+          console.error(err)
+          process.exit(1)
+        })
+        sass.stderr.on('data', err => {
+          console.log(err)
+          process.exit(1)
+        })
+      }
 
       copy(resolve('src/assets'), resolve('.dist/public/assets'))
         .then(() => fuseSw.run())
