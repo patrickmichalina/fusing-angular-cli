@@ -6,7 +6,7 @@ import {
 import { auth } from 'firebase-admin'
 import { of } from 'rxjs'
 import { flatMap, catchError, map, tap } from 'rxjs/operators'
-import { TransferState } from '@angular/platform-browser'
+import { TransferState, StateKey } from '@angular/platform-browser'
 import { FIREBASE_AUTH_OBJ_TS } from './tokens'
 
 function validateToken(auth: auth.Auth, jwt: string) {
@@ -17,9 +17,9 @@ function byMappingItToUndefined(err: any) {
   return of(undefined)
 }
 
-function cacheToBrowser(ts: TransferState) {
+function cacheToBrowser(tsCacheKey: StateKey<any>, ts: TransferState) {
   return function(obj: any) {
-    ts.set(FIREBASE_AUTH_OBJ_TS, obj)
+    ts.set(tsCacheKey, obj)
   }
 }
 
@@ -42,6 +42,7 @@ function toPsuedoUserObject(jwtObj: any) {
 export class FirebaseServerAuth {
   constructor(
     private ts: TransferState,
+    @Inject(FIREBASE_AUTH_OBJ_TS) private tsCacheKey: StateKey<any>,
     @Inject(FIREBASE_AUTH_SERVER_ADMIN_APP) private authAdmin: auth.Auth,
     @Inject(FIREBASE_AUTH_SERVER_USER_JWT) private jwt: string
   ) {}
@@ -50,7 +51,7 @@ export class FirebaseServerAuth {
     ? validateToken(this.authAdmin, this.jwt).pipe(
         flatMap(a => a),
         map(toPsuedoUserObject),
-        tap(cacheToBrowser(this.ts)),
+        tap(cacheToBrowser(this.tsCacheKey, this.ts)),
         catchError(byMappingItToUndefined)
       )
     : of(null)
