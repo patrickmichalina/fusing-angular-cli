@@ -1,16 +1,14 @@
 import { AppModule } from '../app/app.module'
 import { NgModule } from '@angular/core'
-import { BrowserTransferStateModule, BrowserModule } from '@angular/platform-browser'
 import { AppComponent } from '../app/app.component'
 import { FusingAngularBrowserModule } from 'fusing-angular-cli/.build/modules/src/modules/fusing-angular/browser'
 
 @NgModule({
   imports: [
-    BrowserModule.withServerTransition({ appId: 'app-root' }),
-    BrowserTransferStateModule,
     FusingAngularBrowserModule,
     AppModule
   ],
+  exports: [AppModule],
   bootstrap: [AppComponent]
 })
 export class AppBrowserModule { }

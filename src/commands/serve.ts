@@ -23,9 +23,9 @@ import { appEnvironmentVariables } from '../utilities/environment-variables'
 import { renderSassDir } from '../utilities/sass'
 import { exec, execSync } from 'child_process'
 import { NgSwPlugin } from '../fusebox/ng.sw.plugin'
+import { copy } from 'fs-extra'
 import clearTerminal from '../utilities/clear'
 import readConfig_ from '../utilities/read-config'
-import { copy } from 'fs-extra'
 
 command(
   'serve [port][prod][aot][sw]',
@@ -70,6 +70,11 @@ function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
       const browserOutput = resolve(config.fusebox.browser.outputDir)
       const modulesFolder = resolve(process.cwd(), 'node_modules')
       const watchDir = resolve(`${homeDir}/src/**`)
+      const appName =
+        (config.favicon &&
+          config.favicon.config &&
+          config.favicon.config.appName) ||
+        'FUSING ANGULAR'
       const browserModule = isAotBuild
         ? config.fusebox.browser.aotBrowserModule
         : config.fusebox.browser.browserModule
@@ -96,7 +101,7 @@ function serve(isProdBuild = false, isServiceWorkerEnabled = false) {
             template: resolve('src/app/index.pug'),
             engine: 'pug',
             locals: {
-              pageTitle: 'FUSING ANGULAR',
+              pageTitle: appName,
               isLocalDev,
               faviconMeta: (config.generatedMetaTags || []).join('\n')
             }

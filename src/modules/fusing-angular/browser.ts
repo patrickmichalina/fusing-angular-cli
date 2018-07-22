@@ -4,10 +4,16 @@ import { CookiesBrowserModule } from '../cookies/browser'
 import { EnvironmentBrowserModule } from '../environment'
 import { ResponseBrowserModule } from '../response/browser'
 import { ServiceWorkerModule } from '@angular/service-worker'
+import {
+  BrowserTransferStateModule,
+  BrowserModule
+} from '@angular/platform-browser'
 
 // tslint:disable-next-line:no-class
 @NgModule({
   imports: [
+    BrowserModule.withServerTransition({ appId: 'app-root' }),
+    BrowserTransferStateModule,
     ServiceWorkerModule.register('/js/ngsw-worker.js', {
       enabled: false
     }),
@@ -17,6 +23,8 @@ import { ServiceWorkerModule } from '@angular/service-worker'
     ResponseBrowserModule
   ],
   exports: [
+    BrowserModule,
+    BrowserTransferStateModule,
     ServiceWorkerModule,
     WindowBrowserModule,
     CookiesBrowserModule,

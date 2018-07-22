@@ -1,17 +1,15 @@
 import { NgModule } from '@angular/core'
-import { ServerModule, ServerTransferStateModule } from '@angular/platform-server'
 import { AppModule } from '../app/app.module'
 import { AppComponent } from '../app/app.component'
 import { FusingAngularServerModule } from 'fusing-angular-cli/.build/modules/src/modules/fusing-angular/server'
 
 @NgModule({
   imports: [
-    ServerTransferStateModule,
     FusingAngularServerModule,
-    ServerModule,
     AppModule
   ],
-  bootstrap: [AppComponent],
+  exports: [AppModule],
+  bootstrap: [AppComponent]
 })
 export class AppServerModule {
 }
