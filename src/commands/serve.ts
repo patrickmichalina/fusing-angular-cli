@@ -99,7 +99,8 @@ export function serve(
           isAotBuild &&
             NgAotRelativePlugin({
               '"./not-found.component"': 'not-found/not-found.component',
-              '"../response.service"': 'response/response.service'
+              '"../response/browser.response.service"':
+                'response/browser.response.service'
             }),
           isServiceWorkerEnabled && NgSwPlugin(),
           Ng2TemplatePlugin(),
