@@ -8,10 +8,12 @@ import {
   FIREBASE_AUTH_COOKIE_FACTORY,
   FIREBASE_AUTH_OBJ_TS
 } from './tokens'
+// import { FngFirebaseAuthLoadingComponent } from './loading-container/loading-container.component'
 
 // tslint:disable:no-this
 // tslint:disable-next-line:no-class
 @NgModule({
+  // declarations: [FngFirebaseAuthLoadingComponent],
   imports: [AngularFireAuthModule],
   exports: [AngularFireAuthModule],
   providers: [

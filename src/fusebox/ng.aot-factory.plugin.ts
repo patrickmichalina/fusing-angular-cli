@@ -12,7 +12,7 @@ export interface NgAotFactoryPluginOptions {}
 export class NgAotFactoryPluginClass implements Plugin {
   constructor(public opts: NgAotFactoryPluginOptions = defaults) {}
 
-  public test: RegExp = /-routing.module.js/
+  public test: RegExp = /.routing.module.js/
 
   onTypescriptTransform?(file: File) {
     if (!this.test.test(file.relativePath)) return
