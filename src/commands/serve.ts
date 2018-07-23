@@ -24,6 +24,7 @@ import { renderSassDir } from '../utilities/sass'
 import { exec, execSync } from 'child_process'
 import { NgSwPlugin } from '../fusebox/ng.sw.plugin'
 import { copy } from 'fs-extra'
+import { NgAotRelativePlugin } from '../fusebox/ng.aot-relative.plugin'
 import clearTerminal from '../utilities/clear'
 import readConfig_ from '../utilities/read-config'
 
@@ -95,6 +96,11 @@ export function serve(
         useTypescriptCompiler: true,
         plugins: [
           isAotBuild && NgAotFactoryPlugin(),
+          isAotBuild &&
+            NgAotRelativePlugin({
+              '"./not-found.component"': 'not-found/not-found.component',
+              '"../response.service"': 'response/response.service'
+            }),
           isServiceWorkerEnabled && NgSwPlugin(),
           Ng2TemplatePlugin(),
           ['*.component.html', RawPlugin()],
