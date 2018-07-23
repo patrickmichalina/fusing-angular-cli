@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core'
-import { ResponseService } from '../response/browser'
+// import { ResponseService } from '../response/browser'
 
 // tslint:disable-next-line:no-class
 @Component({
@@ -8,7 +8,7 @@ import { ResponseService } from '../response/browser'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NotFoundComponent {
-  constructor(rs: ResponseService) {
-    rs.notFound()
-  }
+  // constructor(rs: ResponseService) {
+  // rs.notFound()
+  // }
 }
