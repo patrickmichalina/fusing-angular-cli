@@ -41,6 +41,10 @@ export default function generatePackageFile(
     ..._config,
     dependencies: {
       'fusing-angular-cli': '^0.2.x'
+    },
+    engines: {
+      node: '= 10.7.0',
+      npm: '= 6.1.0'
     }
   }
   return writeJsonFile_(
