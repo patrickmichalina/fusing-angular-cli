@@ -40,15 +40,13 @@ export class CompressionPluginClass implements Plugin {
       Array.from(producer.bundles)
         .map(bundle => bundle[1].context.output)
         .map(bundleOutput => {
-          return readFile_(
-            `${bundleOutput.dir}/${bundleOutput.filename}.js`
-          ).pipe(
+          return readFile_(bundleOutput.lastWrittenPath).pipe(
             flatMap(file => {
               return forkJoin([
                 gzip_(file, { level: 9 }).pipe(
                   flatMap(compressed =>
                     bundleOutput.writeToOutputFolder(
-                      `${bundleOutput.filename}.js.gzip`,
+                      `${bundleOutput.lastGeneratedFileName}.gzip`,
                       compressed
                     )
                   )
@@ -56,7 +54,7 @@ export class CompressionPluginClass implements Plugin {
                 brotli_(file).pipe(
                   flatMap(compressed =>
                     bundleOutput.writeToOutputFolder(
-                      `${bundleOutput.filename}.js.br`,
+                      `${bundleOutput.lastGeneratedFileName}.br`,
                       compressed
                     )
                   )

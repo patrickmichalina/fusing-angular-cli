@@ -91,10 +91,10 @@ export function serve(
         modulesFolder,
         homeDir,
         cache,
-        output: `${browserOutput}/$name-$hash.js`,
+        hash: isProdBuild,
+        output: `${browserOutput}/$name.js`,
         target: 'browser@es5',
         useTypescriptCompiler: true,
-        hash: isProdBuild,
         plugins: [
           isAotBuild && NgAotFactoryPlugin(),
           isAotBuild &&
@@ -107,7 +107,7 @@ export function serve(
           Ng2TemplatePlugin(),
           ['*.component.html', RawPlugin()],
           WebIndexPlugin({
-            bundles: ['app', 'vendor'],
+            bundles: ['vendor', 'app'],
             path: 'js',
             target: '../index.html',
             template: resolve('src/app/index.pug'),
