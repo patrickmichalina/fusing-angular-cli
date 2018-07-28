@@ -46,7 +46,7 @@ export class CompressionPluginClass implements Plugin {
                 gzip_(file, { level: 9 }).pipe(
                   flatMap(compressed =>
                     bundleOutput.writeToOutputFolder(
-                      `${bundleOutput.lastGeneratedFileName}.gzip`,
+                      `${bundleOutput.lastPrimaryOutput.relativePath}.gzip`,
                       compressed
                     )
                   )
@@ -54,7 +54,7 @@ export class CompressionPluginClass implements Plugin {
                 brotli_(file).pipe(
                   flatMap(compressed =>
                     bundleOutput.writeToOutputFolder(
-                      `${bundleOutput.lastGeneratedFileName}.br`,
+                      `${bundleOutput.lastPrimaryOutput.relativePath}.br`,
                       compressed
                     )
                   )
