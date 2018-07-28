@@ -91,9 +91,10 @@ export function serve(
         modulesFolder,
         homeDir,
         cache,
-        output: `${browserOutput}/$name.js`,
+        output: `${browserOutput}/$name-$hash.js`,
         target: 'browser@es5',
         useTypescriptCompiler: true,
+        hash: isProdBuild,
         plugins: [
           isAotBuild && NgAotFactoryPlugin(),
           isAotBuild &&
