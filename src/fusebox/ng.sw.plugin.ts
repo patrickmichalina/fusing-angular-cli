@@ -11,7 +11,7 @@ const defaults = {}
 export interface NgSwPluginOptions {}
 
 export class NgSwPluginClass {
-  public test: RegExp = /app.browser.module/
+  public test: RegExp = new RegExp('fusing-angular/browser.js')
 
   constructor(public opts: NgSwPluginOptions = defaults) {}
 
