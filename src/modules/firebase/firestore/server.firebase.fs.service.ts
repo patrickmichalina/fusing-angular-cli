@@ -25,6 +25,7 @@ import {
   makeFirestoreStateTransferKey,
   constructFsUrl
 } from './server.firebase.fs.common'
+import { sha1 } from 'object-hash'
 
 interface Field {
   readonly [key: string]: any
@@ -197,9 +198,6 @@ export class ServerUniversalFirestoreService
   universalCollection<T>(path: string, queryFn?: QueryFn) {
     const url = constructFsUrl(extractFsHostFromLib(this.afs), undefined, true)
     const tsKey = makeFirestoreStateTransferKey(url)
-    const params = getParams()
-    const cacheKey = getFullUrl(url, params)
-    const cachedValue = attemptToGetLruCachedValue<T>(cacheKey, this.lru)
     const ref = this.afs.firestore.collection(path)
     const query = (queryFn && queryFn(ref as any)) || ref
     const limit = (query as any)._query.limit
@@ -209,7 +207,8 @@ export class ServerUniversalFirestoreService
     const orderBy = (query as any)._query.explicitOrderBy as ReadonlyArray<
       OrderBy
     >
-
+    const cacheKey = sha1({ ...(query as any)._query, path })
+    const cachedValue = attemptToGetLruCachedValue<T>(cacheKey, this.lru)
     const fieldFilters = filters.map(mapFilterToFieldFilter)
     const where = composeFilter(fieldFilters)
 
